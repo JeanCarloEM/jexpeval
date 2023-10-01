@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "outDir": "build/",
+    "target": "es5",
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "removeComments": true,
+    "module": "esnext",
+    "declaration": true,
+    "alwaysStrict": true,
+    "lib": [
+      "es5",
+      "es6",
+      "dom",
+      "webworker"
+    ]
+  },
+  "include": [
+    "src/**/*",
+    "tests/js/**/*"
+  ],
+  "exclude": [
+    "node_modules/**/*",
+    "build/"
+  ],
+  "hooks": []
+}
