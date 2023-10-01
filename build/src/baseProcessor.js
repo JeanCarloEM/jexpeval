@@ -1,4 +1,4 @@
-import * as D from "./definitions.js";
+import * as D from "./definitions";
 var baseProcessor = (function () {
     function baseProcessor(_parser, _caller, _values) {
         this._parser = _parser;

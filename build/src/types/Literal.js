@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { jexpeval } from "../jexpeval.js";
+import { jexpeval } from "../jexpeval";
 var Literal = (function (_super) {
     __extends(Literal, _super);
     function Literal() {

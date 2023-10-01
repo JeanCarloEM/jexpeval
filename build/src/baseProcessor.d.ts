@@ -1,4 +1,4 @@
-import * as D from "./definitions.js";
+import * as D from "./definitions";
 export declare abstract class baseProcessor implements D.TTypesProcessor {
     protected readonly _parser: D.TExpParser;
     protected readonly _caller: D.TGetCaller;

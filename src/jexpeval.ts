@@ -1,7 +1,6 @@
-import * as D from "./definitions.js"
-import { baseProcessor } from "./baseProcessor.js"
-import { Literal } from "./types/Literal.js"
- console.log("xxxx");
+import * as D from "./definitions"
+import { baseProcessor } from "./baseProcessor"
+import { Literal } from "./types/Literal"
 
 /**
  * https://ericsmekens.github.io/jsep/

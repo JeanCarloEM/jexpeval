@@ -1,10 +1,11 @@
 const path = require('path');
 
 module.exports = {
-  entry: "./build/src/jexpeval.js",
+  mode: "development",
+  entry: "./src/jexpeval.ts",
   devtool: "source-map",
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build/src'),
     filename: 'jexpeval.bundle.js',
     libraryTarget: 'umd',
     library: 'jexpeval',

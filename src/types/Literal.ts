@@ -1,6 +1,6 @@
-import * as D from "../definitions.js"
-import { baseProcessor } from "../baseProcessor.js"
-import { jexpeval } from "../jexpeval.js"
+import * as D from "../definitions"
+import { baseProcessor } from "../baseProcessor"
+import { jexpeval } from "../jexpeval"
 
 export class Literal extends jexpeval implements D.TTypesProcessor {
   public eval(input: string | D.Expression): Promise<D.TDefaultBaseType> {

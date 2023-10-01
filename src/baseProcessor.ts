@@ -1,5 +1,5 @@
-import * as D from "./definitions.js"
-import { Literal } from "./types/Literal.js"
+import * as D from "./definitions"
+import { Literal } from "./types/Literal"
 
 
 /**
