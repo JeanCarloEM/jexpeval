@@ -14,6 +14,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import { baseProcessor } from "./baseProcessor.js";
+console.log("xxxx");
 var jexpeval = (function (_super) {
     __extends(jexpeval, _super);
     function jexpeval() {

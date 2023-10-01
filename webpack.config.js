@@ -1,14 +1,21 @@
 const path = require('path');
+
 module.exports = {
-  entry: "./src/jexpeval.ts",
+  entry: "./build/src/jexpeval.js",
+  devtool: "source-map",
   output: {
-    filename: "jexpeval.umd.js",
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'jexpeval.bundle.js',
+    libraryTarget: 'umd',
+    library: 'jexpeval',
+    umdNamedDefine: true
   },
   resolve: {
-    extensions: [".webpack.js", ".web.js", ".ts", ".js"]
+    extensions: [".ts", ".js", ".tsx"]
   },
   module: {
-    rules: [{ test: /\.ts$/, loader: "ts-loader" }]
+    rules: [
+      { test: /\.([cm]?ts|tsx)$/, loader: "ts-loader" }
+    ]
   }
 }

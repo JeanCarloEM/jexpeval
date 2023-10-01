@@ -4,20 +4,13 @@
   "description": "Client-side logic evaluation writed in javascript.",
   "main": "build/src/jexpeval.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "typecheck2": "tsc --p .",
-    "compile": "tsc",
-    "compile1": "cross-env-shell babel $INIT_CWD -d $INIT_CWD --extensions '.ts' --no-comments --source-maps",
-    "typecheck-compile": "npm run typecheck && npm run compile",
-    "treatjs": "concurrently \"npm run minify\" \"npm run prettier_dist\"",
-    "prettier_dist": "prettier --write \"dist\"",
-    "watch": "tsc-watch --onSuccess \"npm run minify\"",
+    "watch": "tsc-watch --onSuccess \"npm run bundler\"",
     "server": "lite-server --baseDir=",
     "copy": "cpx -w -f \"src/**\" \"build/src/\" -p --ignore \"*.ts\"",
     "copy_tests": "cpx -w -f \"tests/**\" \"build/tests/\" -p --ignore \"*.ts\"",
     "clean_folder": "rimraf \"build/\" -I",
     "start": "concurrently \"npm run clean_folder\" \"npm run copy_tests\" \"npm run copy\" \"npm run watch\" \"npm run server\"",
-    "minify": ""
+    "bundler": "npx webpack"
   },
   "repository": {
     "type": "git",
