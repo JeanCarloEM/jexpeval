@@ -15,16 +15,14 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "removeComments": true,
-    "module": "ES2015",
+    "module": "es2015",
     "declaration": true,
     "declarationMap": true,
     "alwaysStrict": true,
     "allowJs": true,
     "lib": [
       "es5",
-      "es6",
-      "dom",
-      "webworker"
+      "es6"
     ]
   },
   "include": [
