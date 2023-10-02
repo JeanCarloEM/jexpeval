@@ -2,12 +2,11 @@ const path = require('path');
 const NpmDtsPlugin = require('npm-dts-webpack-plugin');
 
 module.exports = {
-  mode: "development",
+  mode: "production",
   entry: "./src/jexpeval.ts",
-  devtool: "source-map",
   output: {
     path: path.resolve(__dirname, 'dist/'),
-    filename: 'jexpeval.dev.js',
+    filename: 'jexpeval.js',
     libraryTarget: 'umd',
     library: 'jexpeval',
     umdNamedDefine: true

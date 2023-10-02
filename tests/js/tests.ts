@@ -1,7 +1,7 @@
+import jsep from "jsep";
 import * as T from "./tdefs.js"
 import * as D from "../../src/definitions.js"
 import { jexpeval } from "../../src/jexpeval.js"
-import jsep from "jsep";
 
 /**
  * https://ericsmekens.github.io/jsep/
@@ -43,9 +43,13 @@ export class tests {
 
       (new jexpeval(
         /* PARSER */
-        (i: string): Promise<D.Expression> => {
-          return new Promise<D.Expression>((R1, R_1) => {
-            let resp: D.Expression = (<T.jsep>jsep)(i);
+        (i: string): Promise<jsep.Expression> => {
+          return new Promise<jsep.Expression>((R1, R_1) => {
+            if (typeof jsep !== 'function') {
+              throw "JSEP is not defined";
+            }
+
+            let resp: jsep.Expression = (jsep)(i);
 
             if (typeof resp !== 'object') {
               throw "Value returned in JSEP is not array"

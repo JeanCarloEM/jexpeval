@@ -1,5 +1,5 @@
-import { jexpeval } from "../../src/jexpeval.js";
 import jsep from "jsep";
+import { jexpeval } from "../../src/jexpeval.js";
 var tests = (function () {
     function tests() {
     }
@@ -26,7 +26,10 @@ var tests = (function () {
             }
             (new jexpeval(function (i) {
                 return new Promise(function (R1, R_1) {
-                    var resp = jsep(i);
+                    if (typeof jsep !== 'function') {
+                        throw "JSEP is not defined";
+                    }
+                    var resp = (jsep)(i);
                     if (typeof resp !== 'object') {
                         throw "Value returned in JSEP is not array";
                     }

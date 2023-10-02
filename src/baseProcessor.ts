@@ -1,4 +1,5 @@
 import * as D from "./definitions"
+import jsep from "jsep";
 import { Literal } from "./types/Literal"
 
 
@@ -19,7 +20,7 @@ export abstract class baseProcessor implements D.TTypesProcessor {
    * @param input
    * @returns
    */
-  public static getType(input: any): null | D.ExpressionType {
+  public static getType(input: any): null | jsep.ExpressionType {
     if (
       (typeof input === "object") &&
       (input.hasOwnProperty('type')) &&
@@ -35,5 +36,5 @@ export abstract class baseProcessor implements D.TTypesProcessor {
    *
    * @param input
    */
-  abstract eval(input: string | D.Expression): Promise<D.TDefaultBaseType>;
+  abstract eval(input: string | jsep.Expression): Promise<D.TDefaultBaseType>;
 }
