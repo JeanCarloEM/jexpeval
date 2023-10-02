@@ -1,1 +1,191 @@
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define("jexpeval",[],t):"object"==typeof exports?exports.jexpeval=t():e.jexpeval=t()}(self,(()=>(()=>{"use strict";var e={d:(t,n)=>{for(var o in n)e.o(n,o)&&!e.o(t,o)&&Object.defineProperty(t,o,{enumerable:!0,get:n[o]})},o:(e,t)=>Object.prototype.hasOwnProperty.call(e,t),r:e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},t={};e.r(t),e.d(t,{jexpeval:()=>p});var n,o=["Compound","Identifier","MemberExpression","Literal","ThisExpression","CallExpression","UnaryExpression","BinaryExpression","ConditionalExpression","ArrayExpression"],r=function(){function e(e,t,n){this._parser=e,this._caller=t,this._values=n}return e.getType=function(e){return"object"==typeof e&&e.hasOwnProperty("type")&&o.indexOf(e.type)?e.type:null},e}(),i=(n=function(e,t){return n=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)Object.prototype.hasOwnProperty.call(t,n)&&(e[n]=t[n])},n(e,t)},function(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Class extends value "+String(t)+" is not a constructor or null");function o(){this.constructor=e}n(e,t),e.prototype=null===t?Object.create(t):(o.prototype=t.prototype,new o)}),p=function(e){function t(){return null!==e&&e.apply(this,arguments)||this}return i(t,e),t.prototype.eval=function(e){var t=this;if("string"!=typeof e)throw"Eval input in jexpeval isnot string";return new Promise((function(n,o){t._parser(e).then((function(e){var r=t.constructor.getType(e);if(null===r)throw"Invalid type in lex eval.";new window[r](t._parser,t._caller,t._values).eval(e).then((function(e){return n(e)})).catch((function(e){return o(e)}))}))}))},t}(r);return t})()));
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define("jexpeval", [], factory);
+	else if(typeof exports === 'object')
+		exports["jexpeval"] = factory();
+	else
+		root["jexpeval"] = factory();
+})(self, () => {
+return /******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./src/baseProcessor.ts":
+/*!******************************!*\
+  !*** ./src/baseProcessor.ts ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   baseProcessor: () => (/* binding */ baseProcessor)
+/* harmony export */ });
+/* harmony import */ var _definitions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./definitions */ "./src/definitions.ts");
+
+var baseProcessor = (function () {
+    function baseProcessor(_parser, _caller, _values) {
+        this._parser = _parser;
+        this._caller = _caller;
+        this._values = _values;
+    }
+    baseProcessor.getType = function (input) {
+        if ((typeof input === "object") &&
+            (input.hasOwnProperty('type')) &&
+            (_definitions__WEBPACK_IMPORTED_MODULE_0__.ExpressionTypeNames.indexOf(input.type))) {
+            return input.type;
+        }
+        return null;
+    };
+    return baseProcessor;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/definitions.ts":
+/*!****************************!*\
+  !*** ./src/definitions.ts ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ExpressionTypeNames: () => (/* binding */ ExpressionTypeNames)
+/* harmony export */ });
+var ExpressionTypeNames = [
+    'Compound',
+    'Identifier',
+    'MemberExpression',
+    'Literal',
+    'ThisExpression',
+    'CallExpression',
+    'UnaryExpression',
+    'BinaryExpression',
+    'ConditionalExpression',
+    'ArrayExpression'
+];
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!*************************!*\
+  !*** ./src/jexpeval.ts ***!
+  \*************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   jexpeval: () => (/* binding */ jexpeval)
+/* harmony export */ });
+/* harmony import */ var _baseProcessor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./baseProcessor */ "./src/baseProcessor.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var jexpeval = (function (_super) {
+    __extends(jexpeval, _super);
+    function jexpeval() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    jexpeval.prototype.eval = function (input) {
+        var _this = this;
+        if (typeof input !== 'string') {
+            throw "Eval input in jexpeval isnot string";
+        }
+        return new Promise(function (R0, R_0) {
+            _this._parser(input)
+                .then(function (r) {
+                var tp = _this.constructor.getType(r);
+                if (tp === null) {
+                    throw "Invalid type in lex eval.";
+                }
+                (new window[tp](_this._parser, _this._caller, _this._values))
+                    .eval(r)
+                    .then(function (r1) { return R0(r1); })
+                    .catch(function (r2) { return R_0(r2); });
+            });
+        });
+    };
+    return jexpeval;
+}(_baseProcessor__WEBPACK_IMPORTED_MODULE_0__.baseProcessor));
+
+
+})();
+
+/******/ 	return __webpack_exports__;
+/******/ })()
+;
+});
+//# sourceMappingURL=jexpeval.js.map

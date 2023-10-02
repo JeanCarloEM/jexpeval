@@ -7,7 +7,7 @@ module.exports = {
   devtool: "source-map",
   output: {
     path: path.resolve(__dirname, 'dist/'),
-    filename: 'jexpeval.dev.js',
+    filename: 'jexpeval.js',
     libraryTarget: 'umd',
     library: 'jexpeval',
     umdNamedDefine: true

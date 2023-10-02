@@ -6,7 +6,7 @@ module.exports = {
   entry: "./src/jexpeval.ts",
   output: {
     path: path.resolve(__dirname, 'dist/'),
-    filename: 'jexpeval.js',
+    filename: 'jexpeval.min.js',
     libraryTarget: 'umd',
     library: 'jexpeval',
     umdNamedDefine: true
