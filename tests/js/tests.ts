@@ -1,7 +1,7 @@
 import jsep from "jsep";
-import * as T from "./tdefs.js"
-import * as D from "../../src/definitions.js"
-import { jexpeval } from "../../src/jexpeval.js"
+import * as T from "./tdefs.js";
+import * as D from "../../src/definitions.js";
+import { jexpeval } from "../../src/jexpeval.js";
 
 /**
  * https://ericsmekens.github.io/jsep/
@@ -16,7 +16,7 @@ export class tests {
   public static run_item(
     input: T.TItemTest[],
     onItem: null | T.TOnItem = null,
-    pre_r: boolean = true
+    pre_r: boolean = true,
   ): Promise<boolean> {
     if (!Array.isArray(input)) {
       throw "input in test.run_item is not array";
@@ -29,7 +29,7 @@ export class tests {
 
       let gi: T.TItemTest | undefined = input.shift();
 
-      if (typeof gi === 'undefined') {
+      if (typeof gi === "undefined") {
         throw "item in test.run_item is undefined";
       }
 
@@ -41,23 +41,23 @@ export class tests {
         throw "item in test.run_item len is less 2";
       }
 
-      (new jexpeval(
+      new jexpeval(
         /* PARSER */
         (i: string): Promise<jsep.Expression> => {
           return new Promise<jsep.Expression>((R1, R_1) => {
-            if (typeof jsep !== 'function') {
+            if (typeof jsep !== "function") {
               throw "JSEP is not defined";
             }
 
-            let resp: jsep.Expression = (jsep)(i);
+            let resp: jsep.Expression = jsep(i);
 
-            if (typeof resp !== 'object') {
-              throw "Value returned in JSEP is not array"
-            };
+            if (typeof resp !== "object") {
+              throw "Value returned in JSEP is not array";
+            }
 
-            if (!resp.hasOwnProperty('type')) {
-              throw "Value returned in JSEP dont contain 'type' item."
-            };
+            if (!resp.hasOwnProperty("type")) {
+              throw "Value returned in JSEP dont contain 'type' item.";
+            }
 
             R1(resp);
           });
@@ -66,13 +66,11 @@ export class tests {
         /* CALLER */
         (name: string, args: any[]): Promise<D.TDefaultBaseType> => {
           return new Promise<D.TDefaultBaseType>((R2, R_2) => {
-            if (name.trim().toLowerCase() === 'tester') {
+            if (name.trim().toLowerCase() === "tester") {
               return R2("_executided_");
             }
 
-            R2(
-              `\`${name}\``
-            );
+            R2(`\`${name}\``);
           });
         },
 
@@ -80,35 +78,26 @@ export class tests {
         (name: string): Promise<D.TDefaultBaseType> => {
           return new Promise<D.TDefaultBaseType>((R3, R_3) => {
             if (
-              ((<T.TItemTest>gi).length > 2) &&
-              (typeof (<T.TItemTest>gi)[2] === 'object') &&
+              (<T.TItemTest>gi).length > 2 &&
+              typeof (<T.TItemTest>gi)[2] === "object" &&
               (<object>(<T.TItemTest>gi)[2]).hasOwnProperty(name)
             ) {
-              return R3(
-                (<D.TStringKeyMap>(<T.TItemTest>gi)[2])[name]
-              );
+              return R3((<D.TStringKeyMap>(<T.TItemTest>gi)[2])[name]);
             }
 
-            R3(
-              `\`${name}\``
-            );
+            R3(`\`${name}\``);
           });
-        }
-      ))
+        },
+      )
         .eval(<string>gi[0])
         .then((r: D.TDefaultBaseType) => {
-          let rr: boolean = Array.isArray(gi) && (gi.length > 1) && r === gi[1];
-          (onItem !== null) && onItem((<T.TItemTest>gi)[0], rr);
+          let rr: boolean = Array.isArray(gi) && gi.length > 1 && r === gi[1];
+          onItem !== null && onItem((<T.TItemTest>gi)[0], rr);
 
-          this.run_item(
-            input,
-            onItem,
-            pre_r && rr
-          )
-            .then(r1 => R0(r1));
+          this.run_item(input, onItem, pre_r && rr).then((r1) => R0(r1));
         });
     });
-  };
+  }
 
   /**
    *
@@ -123,7 +112,7 @@ export class tests {
     onItem: null | T.TOnItem = null,
     onGroup: null | T.TOnGroup = null,
     onGoupFinish: null | T.TOnFinish = null,
-    pre_r: boolean = true
+    pre_r: boolean = true,
   ): Promise<boolean> {
     if (!Array.isArray(input)) {
       throw "input in test.run isnot array";
@@ -136,25 +125,19 @@ export class tests {
 
       let gv: T.TItemGroup | undefined = input.shift();
 
-      if (typeof gv === 'undefined') {
+      if (typeof gv === "undefined") {
         throw "item in test.run is undefined";
       }
 
-      (onGroup !== null) && onGroup(gv.name);
+      onGroup !== null && onGroup(gv.name);
 
-      this.run_item(gv.t, onItem)
-        .then((r: boolean) => {
-          (onGoupFinish !== null) && onGoupFinish((<T.TItemGroup>gv).name, r);
+      this.run_item(gv.t, onItem).then((r: boolean) => {
+        onGoupFinish !== null && onGoupFinish((<T.TItemGroup>gv).name, r);
 
-          this.run(
-            input,
-            onItem,
-            onGroup,
-            onGoupFinish,
-            pre_r && r
-          )
-            .then(r => R0(r));
-        });
+        this.run(input, onItem, onGroup, onGoupFinish, pre_r && r).then((r) =>
+          R0(r),
+        );
+      });
     });
   }
 }

@@ -3,6 +3,7 @@ import { baseProcessor } from "./baseProcessor"
 import { Literal } from "./types/Literal"
 import jsep from "jsep";
 
+
 /**
  * https://ericsmekens.github.io/jsep/
  */
@@ -26,7 +27,7 @@ export class jexpeval extends baseProcessor {
             throw "Invalid type in lex eval."
           }
 
-          (<baseProcessor>(new (<any>window)[tp](this._parser, this._caller, this._values)))
+          (<baseProcessor>(new (<any>global)[tp](this._parser, this._caller, this._values)))
             .eval(<jsep.Expression>r)
             .then(r1 => R0(r1))
             .catch(r2 => R_0(r2));
