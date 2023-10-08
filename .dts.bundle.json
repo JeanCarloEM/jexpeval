@@ -1,0 +1,7 @@
+{
+  "name": "jexpeval",
+  "main": "build/src/jexpeval.d.ts",
+  "baseDir": "",
+  "out": "dist/jexpeval.d.ts",
+  "indent": "  "
+}

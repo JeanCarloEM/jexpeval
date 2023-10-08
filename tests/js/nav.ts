@@ -26,17 +26,20 @@ const onGoupFinish = (name: string, r: boolean) => void {};
  */
 const onItem = (name: string, r: boolean) => void {};
 
+console.log('teste4');
+
+
 /**
  *
  */
-fetch("tests.json")
-  .then((r) => r.json())
-  .then((r) => {
+window.fetch("tests.json")
+  .then((r: any) => r.json())
+  .then((r: object) => {
     console.log("json baixado com sucesso");
     console.log(r);
 
     tests.run(<T.TItemGroup[]>r, onItem, onGroup, onGoupFinish);
   })
-  .catch((r) => {
+  .catch((r: any) => {
     console.log("Falha ao baixar json.");
   });

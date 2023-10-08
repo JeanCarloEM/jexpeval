@@ -15,7 +15,7 @@ jexpeval("2 * 5").then(r => console.log(r));
 
 ### Targets
 
- - Client-size (browsers)
+ - Client-side (browsers)
  - Node.js
 
 ## Features

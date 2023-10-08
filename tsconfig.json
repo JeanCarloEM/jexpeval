@@ -22,14 +22,15 @@
     "allowJs": true,
     "lib": [
       "es5",
-      "es6"
+      "es6",
+      "dom",
+      "webworker"
     ]
   },
   "include": [
     "@types/**/*",
     "src/**/*",
     "tests/**/*",
-    "@types/jsep.d.ts",
     "build/src/jsep.d.ts"
   ],
   "exclude": [
