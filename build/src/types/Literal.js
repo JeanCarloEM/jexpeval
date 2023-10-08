@@ -20,8 +20,7 @@ var Literal = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Literal.prototype.eval = function (input) {
-        return new Promise(function (R0, R_0) {
-        });
+        return new Promise(function (R0, R_0) { });
     };
     return Literal;
 }(jexpeval));

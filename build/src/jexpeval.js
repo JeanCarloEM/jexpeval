@@ -21,12 +21,11 @@ var jexpeval = (function (_super) {
     }
     jexpeval.prototype.eval = function (input) {
         var _this = this;
-        if (typeof input !== 'string') {
+        if (typeof input !== "string") {
             throw "Eval input in jexpeval isnot string";
         }
         return new Promise(function (R0, R_0) {
-            _this._parser(input)
-                .then(function (r) {
+            _this._parser(input).then(function (r) {
                 var tp = _this.constructor.getType(r);
                 if (tp === null) {
                     throw "Invalid type in lex eval.";

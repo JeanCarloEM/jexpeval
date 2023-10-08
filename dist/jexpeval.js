@@ -31,9 +31,9 @@ var baseProcessor = (function () {
         this._values = _values;
     }
     baseProcessor.getType = function (input) {
-        if ((typeof input === "object") &&
-            (input.hasOwnProperty('type')) &&
-            (_definitions__WEBPACK_IMPORTED_MODULE_0__.ExpressionTypeNames.indexOf(input.type))) {
+        if (typeof input === "object" &&
+            input.hasOwnProperty("type") &&
+            _definitions__WEBPACK_IMPORTED_MODULE_0__.ExpressionTypeNames.indexOf(input.type)) {
             return input.type;
         }
         return null;
@@ -56,16 +56,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   ExpressionTypeNames: () => (/* binding */ ExpressionTypeNames)
 /* harmony export */ });
 var ExpressionTypeNames = [
-    'Compound',
-    'Identifier',
-    'MemberExpression',
-    'Literal',
-    'ThisExpression',
-    'CallExpression',
-    'UnaryExpression',
-    'BinaryExpression',
-    'ConditionalExpression',
-    'ArrayExpression'
+    "Compound",
+    "Identifier",
+    "MemberExpression",
+    "Literal",
+    "ThisExpression",
+    "CallExpression",
+    "UnaryExpression",
+    "BinaryExpression",
+    "ConditionalExpression",
+    "ArrayExpression",
 ];
 
 
@@ -173,12 +173,11 @@ var jexpeval = (function (_super) {
     }
     jexpeval.prototype.eval = function (input) {
         var _this = this;
-        if (typeof input !== 'string') {
+        if (typeof input !== "string") {
             throw "Eval input in jexpeval isnot string";
         }
         return new Promise(function (R0, R_0) {
-            _this._parser(input)
-                .then(function (r) {
+            _this._parser(input).then(function (r) {
                 var tp = _this.constructor.getType(r);
                 if (tp === null) {
                     throw "Invalid type in lex eval.";

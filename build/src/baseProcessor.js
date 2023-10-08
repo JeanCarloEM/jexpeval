@@ -6,9 +6,9 @@ var baseProcessor = (function () {
         this._values = _values;
     }
     baseProcessor.getType = function (input) {
-        if ((typeof input === "object") &&
-            (input.hasOwnProperty('type')) &&
-            (D.ExpressionTypeNames.indexOf(input.type))) {
+        if (typeof input === "object" &&
+            input.hasOwnProperty("type") &&
+            D.ExpressionTypeNames.indexOf(input.type)) {
             return input.type;
         }
         return null;
