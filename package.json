@@ -4,9 +4,10 @@
   "description": "Client-side logic evaluation writed in javascript.",
   "main": "dist/jexpeval.js",
   "scripts": {
-    "webpack:prod": "npx webpack --config ./.webpack.production.js",
+    "webpack:cjs": "npx webpack --config ./.webpack.cjs.js",
+    "webpack:umd": "npx webpack --config ./.webpack.umd.js",
     "webpack:dev": "npx webpack --config ./.webpack.config.js",
-    "webpack:all": "concurrently \"npm run webpack:dev\" \"npm run webpack:prod\"",
+    "webpack:all": "concurrently \"npm run webpack:dev\" \"npm run webpack:umd\"",
     "prettier-watch": "",
     "delbuild": "rimraf \"build/\" -I",
     "deldist": "rimraf \"dist/\" -I",

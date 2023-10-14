@@ -9,7 +9,8 @@ module.exports = {
     filename: 'jexpeval.js',
     libraryTarget: 'umd',
     library: 'jexpeval',
-    umdNamedDefine: true
+    umdNamedDefine: true,
+    scriptType: 'module'
   },
   resolve: {
     extensions: [".ts", ".js", ".tsx"]
