@@ -35,59 +35,7 @@ Need a string parser that returns a expressions tree.
 
 ## To-do
 
-- [ ] Github action test
-- [ ] Automatic badge "build" update with actions
-- [ ] Web-based, live test at github pages
-
-### Project environment
-
-- [ ] Automatic compilation in the `.js` file in `dist/`
-- [ ] Automatic minify in the `min.js` file in `dist/`
-- [ ] Automatic generate a bundle definition in the `d.ts` file in `dist/`
-
-### Expression Type Evaluator
-
-- [ ] CoreExpression
-- [ ] ArrayExpression
-- [ ] BinaryExpression
-- [ ] CallExpression
-- [ ] Compound
-- [ ] ConditionalExpression
-- [ ] Identifier
-- [ ] Literal
-- [ ] MemberExpression
-- [ ] ThisExpression
-- [ ] UnaryExpression
-
-### Commom function callers
-
-#### Math Function Callers to implement
-
-- [ ] not
-- [ ] round, Math.round
-- [ ] ceil, Math.ceil
-- [ ] trunc, Math.trunc
-- [ ] floor, Math.floor
-- [ ] abs, Math.abs
-- [ ] pow, Math.pow
-- [ ] exp, Math.exp
-- [ ] ln, log, Math.log
-- [ ] sin, Math.sin
-- [ ] cos, Math.cos
-- [ ] tan, Math.tan
-- [ ] acos, Math.acos
-- [ ] asin, Math.asin
-- [ ] atan, Math.atan
-
-#### String Function Callers to implement
-
-- [ ] len
-- [ ] pos
-- [ ] rpos
-- [ ] sub
-- [ ] replace
-- [ ] explode
-- [ ] implode
+[Here](https://github.com/users/JeanCarloEM/projects/1)
 
 ## License
 
