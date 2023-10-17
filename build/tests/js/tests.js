@@ -1,5 +1,5 @@
 import { jexpeval } from "../../src/jexpeval.js";
-import jsep from "jsep";
+import * as jsep from "jsep";
 var tests = (function () {
     function tests() {
     }

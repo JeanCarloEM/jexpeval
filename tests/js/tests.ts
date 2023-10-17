@@ -2,7 +2,7 @@ import * as T from "./tdefs.js";
 import * as D from "../../src/definitions.js";
 import { jexpeval } from "../../src/jexpeval.js";
 import * as unknowParser from "../../src/unknowParser.js";
-import jsep from "jsep";
+import * as jsep from "jsep";
 
 /**
  * https://ericsmekens.github.io/jsep/
