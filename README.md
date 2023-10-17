@@ -39,4 +39,5 @@ Need a string parser that returns a expressions tree.
 
 ## License
 
-MPL 2.0+
+- MPL 2.0+
+- Additionally, JeanCarloEM reserves the right, at any time and without prior notice, to change the license of this content to another partial or incompatible COPYLEFT license (opensource license).

@@ -1,3 +1,4 @@
 {
-  "startPath": "build/tests/index.html"
+  "startPath": "build/tests/index.html",
+  "reloadDelay": 2000
 }
