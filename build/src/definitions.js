@@ -1,13 +1,2 @@
-export var ExpressionTypeNames = [
-    "Compound",
-    "Identifier",
-    "MemberExpression",
-    "Literal",
-    "ThisExpression",
-    "CallExpression",
-    "UnaryExpression",
-    "BinaryExpression",
-    "ConditionalExpression",
-    "ArrayExpression",
-];
+export {};
 //# sourceMappingURL=definitions.js.map

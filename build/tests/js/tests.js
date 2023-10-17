@@ -1,5 +1,5 @@
-import jsep from "jsep";
 import { jexpeval } from "../../src/jexpeval.js";
+import jsep from "jsep";
 var tests = (function () {
     function tests() {
     }
@@ -25,35 +25,8 @@ var tests = (function () {
                 throw "item in test.run_item len is less 2";
             }
             new jexpeval(function (i) {
-                return new Promise(function (R1, R_1) {
-                    if (typeof jsep !== "function") {
-                        throw "JSEP is not defined";
-                    }
-                    var resp = jsep(i);
-                    if (typeof resp !== "object") {
-                        throw "Value returned in JSEP is not array";
-                    }
-                    if (!resp.hasOwnProperty("type")) {
-                        throw "Value returned in JSEP dont contain 'type' item.";
-                    }
-                    R1(resp);
-                });
-            }, function (name, args) {
-                return new Promise(function (R2, R_2) {
-                    if (name.trim().toLowerCase() === "tester") {
-                        return R2("_executided_");
-                    }
-                    R2("`".concat(name, "`"));
-                });
-            }, function (name) {
-                return new Promise(function (R3, R_3) {
-                    if (gi.length > 2 &&
-                        typeof gi[2] === "object" &&
-                        gi[2].hasOwnProperty(name)) {
-                        return R3(gi[2][name]);
-                    }
-                    R3("`".concat(name, "`"));
-                });
+                console.log("z");
+                return jexpeval.genericCallerUnknowParser(jsep, i);
             })
                 .eval(gi[0])
                 .then(function (r) {

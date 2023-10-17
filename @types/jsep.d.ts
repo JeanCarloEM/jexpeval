@@ -1,6 +1,7 @@
 /**
- * https://github.com/EricSmekens/jsep
- * MIT
+ * @git https://github.com/EricSmekens/jsep
+ * @author EricSmekens
+ * @license MIT
  */
 declare module 'jsep' {
 

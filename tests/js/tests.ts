@@ -1,7 +1,8 @@
-import jsep from "jsep";
 import * as T from "./tdefs.js";
 import * as D from "../../src/definitions.js";
 import { jexpeval } from "../../src/jexpeval.js";
+import * as unknowParser from "../../src/unknowParser.js";
+import jsep from "jsep";
 
 /**
  * https://ericsmekens.github.io/jsep/
@@ -43,50 +44,9 @@ export class tests {
 
       new jexpeval(
         /* PARSER */
-        (i: string): Promise<jsep.Expression> => {
-          return new Promise<jsep.Expression>((R1, R_1) => {
-            if (typeof jsep !== "function") {
-              throw "JSEP is not defined";
-            }
-
-            let resp: jsep.Expression = jsep(i);
-
-            if (typeof resp !== "object") {
-              throw "Value returned in JSEP is not array";
-            }
-
-            if (!resp.hasOwnProperty("type")) {
-              throw "Value returned in JSEP dont contain 'type' item.";
-            }
-
-            R1(resp);
-          });
-        },
-
-        /* CALLER */
-        (name: string, args: any[]): Promise<D.TDefaultBaseType> => {
-          return new Promise<D.TDefaultBaseType>((R2, R_2) => {
-            if (name.trim().toLowerCase() === "tester") {
-              return R2("_executided_");
-            }
-
-            R2(`\`${name}\``);
-          });
-        },
-
-        /* VALUES */
-        (name: string): Promise<D.TDefaultBaseType> => {
-          return new Promise<D.TDefaultBaseType>((R3, R_3) => {
-            if (
-              (<T.TItemTest>gi).length > 2 &&
-              typeof (<T.TItemTest>gi)[2] === "object" &&
-              (<object>(<T.TItemTest>gi)[2]).hasOwnProperty(name)
-            ) {
-              return R3((<D.TStringKeyMap>(<T.TItemTest>gi)[2])[name]);
-            }
-
-            R3(`\`${name}\``);
-          });
+        (i: string): Promise<unknowParser.Expression> => {
+          console.log("z");
+          return jexpeval.genericCallerUnknowParser(jsep, i);
         },
       )
         .eval(<string>gi[0])
