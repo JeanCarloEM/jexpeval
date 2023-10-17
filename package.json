@@ -20,7 +20,9 @@
     "copy:watch:all": "concurrently \"npm run copy:watch:src\" \"npm run copy:watch:tests\"",
     "renew": "npm run clean && npm run copy:all\"",
     "server": "lite-server --baseDir=",
-    "ts-watch": "tsc-watch --onSuccess \"npm run webpack:all\"",
+    "ts:fixjs": "npx fix-esm-import-path ./build",
+    "ts:after": "concurrently \"npm run webpack:all\" \"npm run ts:fixjs\"",
+    "ts-watch": "tsc-watch --onSuccess \"npm run ts:after\"",
     "watch:old": "concurrently \"npm run webpack:dev\" \"npm run build\" \"npm run ts-watch\"",
     "prettier:watch": "onchange \"src/**/*\" \"tests/**/*\" -- prettier --write --ignore-unknown {{changed}}",
     "watch:start": "concurrently \"npm run copy:watch:all\" \"npm run prettier:watch\" \"npm run ts-watch\" \"npm run server\"",
@@ -40,6 +42,7 @@
   "devDependencies": {
     "concurrently": "8.2.0",
     "dts-bundle": "^0.1.1",
+    "fix-esm-import-path": "^1.4.0",
     "lite-server": "^2.6.1",
     "onchange": "^7.1.0",
     "prettier": "^3.0.0",

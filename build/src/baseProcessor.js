@@ -1,4 +1,4 @@
-import * as unknowParser from "./unknowParser";
+import * as unknowParser from "./unknowParser.js";
 var baseProcessor = (function () {
     function baseProcessor(_parser, _caller, _values) {
         if (_caller === void 0) { _caller = baseProcessor.genericCallerSolver; }
