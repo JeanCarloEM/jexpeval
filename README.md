@@ -33,9 +33,9 @@ jexpeval("2 * 5").then((r) => console.log(r));
 
 Need a string parser that returns a expressions tree.
 
-## To-do
+## Project and To-do
 
-[Here](https://github.com/users/JeanCarloEM/projects/1)
+**jExpEval** is developed for (and as an integral part of) [strTranformJs](https://github.com/JeanCarloEM/strtransformjs). See project [to-do](https://github.com/users/JeanCarloEM/projects/1) for more.
 
 ## License
 
