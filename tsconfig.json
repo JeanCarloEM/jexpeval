@@ -27,6 +27,10 @@
       "webworker"
     ]
   },
+  "baseUrl": "types",
+  "typeRoots": [
+    "types"
+  ],
   "include": [
     "@types/**/*",
     "src/**/*",
