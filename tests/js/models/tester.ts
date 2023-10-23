@@ -3,7 +3,7 @@ import { TPrintableEvalResult } from "../../../src/definitions";
 
 export type TTestItemSource = [string, TPrintableEvalResult];
 
-export type TTestResult = "running" | "not_started" | true | false;
+export type TTestResult = "not_started" | "running" | true | false;
 
 export type TFinishTest = (id: string, resp: TTestResult) => void;
 
@@ -25,6 +25,14 @@ export class testSolver extends TIterator<testSolver> {
   ) {
     super(
       <testSolver[]>(() => {
+        if ((typeof tests !== "object") || (!Array.isArray(tests))) {
+          throw "[testSolver] tests parameter isn't object array."
+        }
+
+        if (typeof onFinish !== 'function') {
+          throw "[testSolver] onFinish parameter isn't function."
+        }
+
         let _self: testSolver[] = [];
 
         if (tests.length > 1) {
@@ -43,15 +51,15 @@ export class testSolver extends TIterator<testSolver> {
 
     if (tests.length === 1) {
       if (tests[0].length !== 2) {
-        throw "[testSolver] tests[0] in constructor don't contain 2 elements.";
+        throw "[testSolver] tests[0] parameter in constructor don't contain 2 elements.";
       }
 
       if (typeof tests[0][0] !== "string") {
-        throw "[testSolver] tests[0][0] in constructor isn't string.";
+        throw "[testSolver] tests[0][0] parameter in constructor isn't string.";
       }
 
       if (tests[0][0].trim().length === 0) {
-        throw "[testSolver] tests[0][0] in constructor is empty.";
+        throw "[testSolver] tests[0][0] parameter in constructor is empty.";
       }
 
       crypto.subtle
