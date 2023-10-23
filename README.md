@@ -9,7 +9,7 @@
 It acts as an expression parser that works with any lexical analyzer that returns a binary tree, as simple as:
 
 ```javascript
-new jexpeval(anyParserCaller, callerSolver, callerSolver)
+new jexpeval(anyParserCaller, callerSolver, valuesSolver)
   .eval("2 * 5")
   .then((r) => console.log(r));
 // show 10
