@@ -17,7 +17,7 @@ export abstract class baseProcessor implements D.TTypesProcessor {
    */
   abstract eval(
     input: string | unknowParser.Expression,
-  ): Promise<D.TDefaultBaseType>;
+  ): Promise<D.TEvalResult>;
 
   /**
    * Default provided for callers solvers return nothing
@@ -29,8 +29,8 @@ export abstract class baseProcessor implements D.TTypesProcessor {
   public static genericCallerSolver(
     name: string,
     args: any[],
-  ): Promise<D.TDefaultBaseType> {
-    return new Promise<D.TDefaultBaseType>((R, R_) => {
+  ): Promise<D.TEvalResult> {
+    return new Promise<D.TEvalResult>((R, R_) => {
       R(`\`${name}\``);
     });
   }
@@ -42,8 +42,8 @@ export abstract class baseProcessor implements D.TTypesProcessor {
    * @param args
    * @returns
    */
-  public static genericValuesSolver(name: string): Promise<D.TDefaultBaseType> {
-    return new Promise<D.TDefaultBaseType>((R, R_) => {
+  public static genericValuesSolver(name: string): Promise<D.TEvalResult> {
+    return new Promise<D.TEvalResult>((R, R_) => {
       R(`\`${name}\``);
     });
   }

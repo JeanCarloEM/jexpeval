@@ -1,8 +1,5 @@
 export abstract class TIterator<T> {
-  constructor(
-    private readonly items: T[]
-  ) {
-  }
+  constructor(private readonly items: T[]) {}
 
   /**
    *
@@ -21,8 +18,8 @@ export abstract class TIterator<T> {
   }
 
   /**
-     * Returns a string representation of an array.
-     */
+   * Returns a string representation of an array.
+   */
   public abstract toString(): string;
 
   /*! *****************************************************************************
@@ -207,9 +204,18 @@ export abstract class TIterator<T> {
    * @param thisArg An object to which the this keyword can refer in the predicate function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  public every<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): this is S[];
-  public every(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean;
-  public every(predicate: (value: T, index: number, array: T[]) => any, thisArg?: any): any {
+  public every<S extends T>(
+    predicate: (value: T, index: number, array: T[]) => value is S,
+    thisArg?: any,
+  ): this is S[];
+  public every(
+    predicate: (value: T, index: number, array: T[]) => unknown,
+    thisArg?: any,
+  ): boolean;
+  public every(
+    predicate: (value: T, index: number, array: T[]) => any,
+    thisArg?: any,
+  ): any {
     return this.items.every(predicate, thisArg);
   }
 
@@ -221,7 +227,10 @@ export abstract class TIterator<T> {
    * @param thisArg An object to which the this keyword can refer in the predicate function.
    * If thisArg is omitted, undefined is used as the this value.
    */
-  some(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): boolean {
+  some(
+    predicate: (value: T, index: number, array: T[]) => unknown,
+    thisArg?: any,
+  ): boolean {
     return this.items.some(predicate, thisArg);
   }
 
@@ -230,7 +239,10 @@ export abstract class TIterator<T> {
    * @param callbackfn  A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array.
    * @param thisArg  An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
    */
-  public forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void {
+  public forEach(
+    callbackfn: (value: T, index: number, array: T[]) => void,
+    thisArg?: any,
+  ): void {
     return this.items.forEach(callbackfn, thisArg);
   }
 
@@ -239,7 +251,10 @@ export abstract class TIterator<T> {
    * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array.
    * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
    */
-  public map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[] {
+  public map<U>(
+    callbackfn: (value: T, index: number, array: T[]) => U,
+    thisArg?: any,
+  ): U[] {
     return this.items.map(callbackfn, thisArg);
   }
   /**
@@ -247,9 +262,18 @@ export abstract class TIterator<T> {
    * @param predicate A function that accepts up to three arguments. The filter method calls the predicate function one time for each element in the array.
    * @param thisArg An object to which the this keyword can refer in the predicate function. If thisArg is omitted, undefined is used as the this value.
    */
-  public filter<S extends T>(predicate: (value: T, index: number, array: T[]) => value is S, thisArg?: any): S[];
-  public filter(predicate: (value: T, index: number, array: T[]) => unknown, thisArg?: any): T[];
-  public filter(predicate: (value: T, index: number, array: T[]) => any, thisArg?: any): any {
+  public filter<S extends T>(
+    predicate: (value: T, index: number, array: T[]) => value is S,
+    thisArg?: any,
+  ): S[];
+  public filter(
+    predicate: (value: T, index: number, array: T[]) => unknown,
+    thisArg?: any,
+  ): T[];
+  public filter(
+    predicate: (value: T, index: number, array: T[]) => any,
+    thisArg?: any,
+  ): any {
     return this.items.filter(predicate, thisArg);
   }
 
@@ -258,10 +282,41 @@ export abstract class TIterator<T> {
    * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
    * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
    */
-  public reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;
-  public reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
-  public reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
-  public reduce(callbackfn: (previousValue: any, currentValue: T, currentIndex: number, array: any[]) => any, initialValue?: any): any {
+  public reduce(
+    callbackfn: (
+      previousValue: T,
+      currentValue: T,
+      currentIndex: number,
+      array: T[],
+    ) => T,
+  ): T;
+  public reduce(
+    callbackfn: (
+      previousValue: T,
+      currentValue: T,
+      currentIndex: number,
+      array: T[],
+    ) => T,
+    initialValue: T,
+  ): T;
+  public reduce<U>(
+    callbackfn: (
+      previousValue: U,
+      currentValue: T,
+      currentIndex: number,
+      array: T[],
+    ) => U,
+    initialValue: U,
+  ): U;
+  public reduce(
+    callbackfn: (
+      previousValue: any,
+      currentValue: T,
+      currentIndex: number,
+      array: any[],
+    ) => any,
+    initialValue?: any,
+  ): any {
     return this.items.reduce(callbackfn, initialValue);
   }
 
@@ -270,10 +325,41 @@ export abstract class TIterator<T> {
    * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array.
    * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
    */
-  public reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T): T;
-  public reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue: T): T;
-  public reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
-  public reduceRight(callbackfn: (previousValue: any, currentValue: T, currentIndex: number, array: T[]) => any, initialValue?: any): any {
+  public reduceRight(
+    callbackfn: (
+      previousValue: T,
+      currentValue: T,
+      currentIndex: number,
+      array: T[],
+    ) => T,
+  ): T;
+  public reduceRight(
+    callbackfn: (
+      previousValue: T,
+      currentValue: T,
+      currentIndex: number,
+      array: T[],
+    ) => T,
+    initialValue: T,
+  ): T;
+  public reduceRight<U>(
+    callbackfn: (
+      previousValue: U,
+      currentValue: T,
+      currentIndex: number,
+      array: T[],
+    ) => U,
+    initialValue: U,
+  ): U;
+  public reduceRight(
+    callbackfn: (
+      previousValue: any,
+      currentValue: T,
+      currentIndex: number,
+      array: T[],
+    ) => any,
+    initialValue?: any,
+  ): any {
     return this.items.reduceRight(callbackfn, initialValue);
   }
 }

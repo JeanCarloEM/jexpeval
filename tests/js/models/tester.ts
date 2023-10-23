@@ -1,23 +1,27 @@
-import { TIterator } from "./iterator.js";
+import { TIterator } from "./iterator";
+import { TPrintableEvalResult } from "../../../src/definitions";
 
-export type TTestItemSource = [string, boolean | number | string];
+export type TTestItemSource = [string, TPrintableEvalResult];
 
-export type TTestResult = "running" | "not started" | true | false;
+export type TTestResult = "running" | "not_started" | true | false;
 
 export type TFinishTest = (id: string, resp: TTestResult) => void;
 
+export type TSolver = (test: string) => Promise<TPrintableEvalResult>;
+
 export class testSolver extends TIterator<testSolver> {
   private _test: null | TTestItemSource = null;
-  private _status: TTestResult = "not started";
+  private _status: TTestResult = "not_started";
   private _approved: boolean = true;
   private _test_pos: number = 0;
   private _id: string = "";
 
   constructor(
     tests: TTestItemSource[],
-    private readonly finish: TFinishTest,
-    private readonly finishChild: null | TFinishTest = null,
-    private readonly statusChange: null | TFinishTest = null,
+    private readonly solver: TSolver,
+    private readonly onFinish: TFinishTest,
+    private readonly onFinishChild: null | TFinishTest = null,
+    private readonly onStatusChange: null | TFinishTest = null,
   ) {
     super(
       <testSolver[]>(() => {
@@ -25,7 +29,9 @@ export class testSolver extends TIterator<testSolver> {
 
         if (tests.length > 1) {
           tests.map((item) => {
-            _self.push(new testSolver([item], this.onFinishChild));
+            _self.push(
+              new testSolver([item], this.solver, this.onMyFinishChild),
+            );
           });
 
           return _self;
@@ -79,11 +85,11 @@ export class testSolver extends TIterator<testSolver> {
   private set status(v: TTestResult) {
     this._status = v;
 
-    if (typeof this.statusChange !== "function") {
+    if (typeof this.onStatusChange !== "function") {
       return;
     }
 
-    this.statusChange(this._id, this._status);
+    this.onStatusChange(this._id, this._status);
   }
 
   /**
@@ -97,20 +103,20 @@ export class testSolver extends TIterator<testSolver> {
   /**
    *
    */
-  protected onFinish(state?: TTestResult): void {
+  protected finished(state?: TTestResult): void {
     if (state === true || state === false) {
       this.updateStatus(state);
     }
 
     this.status = this._approved;
     this._test_pos = 0;
-    return this.finish(this._id, this.status);
+    return this.onFinish(this._id, this.status);
   }
 
   /**
    *
    */
-  public onFinishChild(id: string, resp: TTestResult): void {
+  public onMyFinishChild(id: string, resp: TTestResult): void {
     if (id.trim().length === 0) {
       throw "[testSolver] onFinishChild cannot receive an empty 'id' of child.";
     }
@@ -120,8 +126,8 @@ export class testSolver extends TIterator<testSolver> {
     }
 
     /* trigger an eventual event, if there is a callback  */
-    if (typeof this.finishChild === "function") {
-      this.finishChild(id, resp);
+    if (typeof this.onFinishChild === "function") {
+      this.onFinishChild(id, resp);
     }
 
     this.updateStatus(resp);
@@ -130,7 +136,7 @@ export class testSolver extends TIterator<testSolver> {
       return this.at(this._test_pos++)?.run();
     }
 
-    this.onFinish();
+    this.finished();
   }
 
   /**
@@ -147,7 +153,7 @@ export class testSolver extends TIterator<testSolver> {
   public run(): void {
     /* ist finished */
     if (this.status === false || this.status === true) {
-      return this.finish(this._id, this.status);
+      this.finished(this.status);
     }
 
     this.status = "running";
@@ -165,5 +171,12 @@ export class testSolver extends TIterator<testSolver> {
     if (this.length > 0) {
       throw "[testSolver] values ​​defined simultaneously as individual and group in '.run()'.";
     }
+
+    const TEST: TTestItemSource = this._test;
+
+    this.solver(TEST[0]).then((r: TPrintableEvalResult) => {
+      /* if it is a number or string, normalizes both as string */
+      this.finished(String(TEST[1]) === String(r));
+    });
   }
 }

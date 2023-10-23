@@ -50,7 +50,7 @@ export class tests {
         },
       )
         .eval(<string>gi[0])
-        .then((r: D.TDefaultBaseType) => {
+        .then((r: D.TEvalResult) => {
           let rr: boolean = Array.isArray(gi) && gi.length > 1 && r === gi[1];
           onItem !== null && onItem((<T.TItemTest>gi)[0], rr);
 

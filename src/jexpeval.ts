@@ -12,14 +12,12 @@ export class jexpeval extends baseProcessor {
    * @param input
    * @returns
    */
-  public eval(
-    input: string | unknowParser.Expression,
-  ): Promise<D.TDefaultBaseType> {
+  public eval(input: string | unknowParser.Expression): Promise<D.TEvalResult> {
     if (typeof input !== "string") {
       throw "Eval input in jexpeval isnot string";
     }
 
-    return new Promise<D.TDefaultBaseType>((R0, R_0) => {
+    return new Promise<D.TEvalResult>((R0, R_0) => {
       this._parser(input).then((r: any) => {
         let tp: null | unknowParser.ExpressionType = (
           this.constructor as typeof jexpeval
