@@ -1,5 +1,9 @@
 export abstract class TIterator<T> {
-  constructor(private readonly items: T[]) {}
+  constructor(private readonly items: T[]) {
+    if ((typeof items !== "object") || (!Array.isArray(items))) {
+      throw "[TIterator] items parameter isn't object array."
+    }
+  }
 
   /**
    *
