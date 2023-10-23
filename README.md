@@ -2,7 +2,7 @@
 
 [![</> - typescript](https://img.shields.io/badge/<%2F>-typescript-blue)](https://) [![license - MPL 2.0+](https://img.shields.io/static/v1?label=license&message=MPL+2.0%2B&color=%23333333)](https://github.com/JeanCarloEM/jexpeval/blob/dev/LICENSE) [![Status - development](https://img.shields.io/badge/status-development-red)](https://)
 
-**jExpEval** is an asynchronous, javascript, pluggable, browser-compatible and safe string evaluator. This uses parsers like [jsep](https://ericsmekens.github.io/jsep/) and resolves the [binary expression tree](https://en.wikipedia.org/wiki/Binary_expression_tree) returned by it.
+**jExpEval** is an asynchronous, pluggable, browser-compatible and safe string evaluator. This uses parsers like [jsep](https://ericsmekens.github.io/jsep/) and resolves the [binary expression tree](https://en.wikipedia.org/wiki/Binary_expression_tree) returned by it.
 
 ## Goal
 
