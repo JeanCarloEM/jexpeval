@@ -1,5 +1,8 @@
 import * as T from "./tdefs.js";
 import { tests } from "./tests.js";
+import { h, Component, render } from "preact";
+import htm from "htm";
+//import testItem from "./browser/item.js";
 
 export abstract class navtests {
   /**

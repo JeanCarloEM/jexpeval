@@ -25,14 +25,17 @@
     <script type="importmap">
       {
         "imports": {
-          "jsep": "https://cdn.jsdelivr.net/npm/jsep@1.3.8/dist/iife/jsep.iife.min.js"
+          "jsep": "https://cdn.jsdelivr.net/npm/jsep@1.3.8/dist/iife/jsep.iife.min.js",
+          "preact": "https://unpkg.com/htm/preact/standalone.module.js"
         }
       }
     </script>
 
     <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/jsep@1.3.8/dist/iife/jsep.iife.min.js"
+      src="https://cdnjs.cloudflare.com/ajax/libs/preact/10.18.1/preact.min.js"
+      integrity="sha512-we2aCL5DYiQ+FvuKcFmesgIZdKQAGrTxVSOP5A591vUmQA9y6hpTyLrUtLrHTWJQTT0a0q5/sST3SwXDm69f4g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     ></script>
 
     <script type="module" src="js/tests.js"></script>
@@ -40,7 +43,7 @@
     <script type="module" src="js/nav.js"></script>
     -->
     <script type="module">
-      import { navtests } from "./js/nav.js";
+      import { navtests } from "./js/browser.js";
       navtests.run();
     </script>
   </head>
