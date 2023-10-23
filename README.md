@@ -19,7 +19,7 @@ new jexpeval(anyParserCaller, callerSolver, valuesSolver)
 
 - **anyParserCaller** is a function of type (TExpParser) that should return the binary tree obtained by any parser like jsep.
 - **callerSolver** is a OPTIONAL function (of type TGetCaller) that must calculate the result of some custom function.
-- **callerSolver** is an OPTIONAL function (of type TGetValue) that must return the value of a custom identifier/variable.
+- **valuesSolver** is an OPTIONAL function (of type TGetValue) that must return the value of a custom identifier/variable.
 
 ### Targets
 
