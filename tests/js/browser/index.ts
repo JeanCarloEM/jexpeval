@@ -1,5 +1,5 @@
-import * as T from "./tdefs.js";
-import { tests } from "./tests.js";
+import * as T from "../tdefs.js";
+import { tests } from "../tests.js";
 import { h, Component, render } from "preact";
 import htm from "htm";
 //import testItem from "./browser/item.js";
@@ -10,7 +10,7 @@ export abstract class navtests {
    * @param name
    * @returns
    */
-  public static onGroup(name: string): void {}
+  public static onGroup(name: string): void { }
 
   /**
    *
@@ -18,7 +18,7 @@ export abstract class navtests {
    * @param r
    * @returns
    */
-  public static onGoupFinish(name: string, r: boolean): void {}
+  public static onGoupFinish(name: string, r: boolean): void { }
 
   /**
    *
@@ -26,7 +26,7 @@ export abstract class navtests {
    * @param r
    * @returns
    */
-  public static onItem(name: string, r: boolean): void {}
+  public static onItem(name: string, r: boolean): void { }
 
   /**
    *

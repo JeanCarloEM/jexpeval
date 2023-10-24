@@ -1,7 +1,8 @@
 import { TIterator } from "./iterator";
 import { TPrintableEvalResult } from "../../../src/definitions";
+import { Expression } from "jsep";
 
-export type TTestItemSource = [string, TPrintableEvalResult];
+export type TTestItemSource = [expression: string, expectedResult: TPrintableEvalResult];
 
 export type TTestResult = "not_started" | "running" | true | false;
 
