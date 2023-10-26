@@ -2,72 +2,173 @@ import { TIterator } from "./iterator";
 import { TPrintableEvalResult } from "../../../src/definitions";
 import { Expression } from "jsep";
 
-export type TTestItemSource = [expression: string, expectedResult: TPrintableEvalResult];
+export type TOneTestItemSource = [
+  expression: string,
+  expectedResult: TPrintableEvalResult,
+  title?: string,
+];
+
+export type TOneExplicitTest = {
+  expression: string;
+  expectedResult: TPrintableEvalResult;
+};
+
+export type TTestGroupSource = [title: string, tests: TOneTestItemSource[]];
+
+export type TTestSource = TOneTestItemSource | TTestGroupSource;
 
 export type TTestResult = "not_started" | "running" | true | false;
 
-export type TFinishTest = (id: string, resp: TTestResult) => void;
+export interface ItestSolver {
+  id: string;
+  status: TTestResult;
+  title: string;
+  test: TOneExplicitTest;
+  isGroup: () => boolean;
+  isTest: () => boolean;
+}
 
-export type TSolver = (test: string) => Promise<TPrintableEvalResult>;
+export type TonTestStatusChange = (
+  id: string,
+  resp: TTestResult,
+  item?: ItestSolver,
+) => void;
 
-export class testSolver extends TIterator<testSolver> {
-  private _test: null | TTestItemSource = null;
+export type TSolverCall = (str: string) => Promise<TPrintableEvalResult>;
+
+export type TTestMode = "group" | "test";
+
+export class testSolver extends TIterator<testSolver> implements ItestSolver {
+  private _test: null | undefined | TOneExplicitTest = undefined;
   private _status: TTestResult = "not_started";
   private _approved: boolean = true;
-  private _test_pos: number = 0;
+  private _indexTest: number = 0;
   private _id: string = "";
+  private _title: string = "";
 
   constructor(
-    tests: TTestItemSource[],
-    private readonly solver: TSolver,
-    private readonly onFinish: TFinishTest,
-    private readonly onFinishChild: null | TFinishTest = null,
-    private readonly onStatusChange: null | TFinishTest = null,
+    tests: testSolver[] | TTestSource,
+    private readonly solver: TSolverCall,
+    private readonly onStatusChange: null | TonTestStatusChange = null,
   ) {
     super(
       <testSolver[]>(() => {
-        if ((typeof tests !== "object") || (!Array.isArray(tests))) {
-          throw "[testSolver] tests parameter isn't object array."
+        if (typeof tests !== "object" || !Array.isArray(tests)) {
+          throw "[testSolver] tests parameter isn't object array.";
         }
 
-        if (typeof onFinish !== 'function') {
-          throw "[testSolver] onFinish parameter isn't function."
+        if ([...tests].length === 0) {
+          throw "[testSolver] tests parameter is empty.";
         }
 
-        let _self: testSolver[] = [];
-
-        if (tests.length > 1) {
-          tests.map((item) => {
-            _self.push(
-              new testSolver([item], this.solver, this.onMyFinishChild),
-            );
-          });
-
-          return _self;
+        /* is a array of testSolver, passthrough this for iterator */
+        if (typeof tests[0] !== "string") {
+          return tests;
         }
 
-        return [];
+        if ([...tests].length < 2) {
+          throw "[testSolver] test size is less than 2.";
+        }
+
+        /* Is a one test, passthrough empty for iterator */
+        if (typeof tests[1] !== "object") {
+          return [];
+        }
+
+        /* is a test group,  */
+
+        if (!Array.isArray(tests[1])) {
+          throw "[testSolver] tests is not a valid group, as [1] is not an array..";
+        }
+
+        /* is TTestSource */
+
+        var _self: testSolver[] = [];
+
+        tests[1].map((item) => {
+          _self.push(new testSolver(item, this.solver, this.onMyFinishChild));
+        });
+
+        return _self;
       })(),
     );
 
-    if (tests.length === 1) {
-      if (tests[0].length !== 2) {
+    ((setTitle) => {
+      /* set type mode as group */
+      if (this.length > 0) {
+        this._test = null;
+        return setTitle((<TTestSource>tests)[0].trim());
+      }
+
+      /* is test */
+
+      if (tests[1]) {
         throw "[testSolver] tests[0] parameter in constructor don't contain 2 elements.";
       }
 
-      if (typeof tests[0][0] !== "string") {
-        throw "[testSolver] tests[0][0] parameter in constructor isn't string.";
+      /* set test */
+      this._test = <TOneExplicitTest>{
+        expression: tests[0],
+        expectedResult: tests[1],
+      };
+
+      /* if title is passed in ONE test */
+      if (tests.length === 3) {
+        if (typeof tests[2] !== "string") {
+          throw `[testSolver] title isn't string in TOneTestItemSource.`;
+        }
+
+        tests[2] = tests[2].trim();
+
+        if (tests[2].length > 0) {
+          return setTitle(tests[2]);
+        }
       }
 
-      if (tests[0][0].trim().length === 0) {
-        throw "[testSolver] tests[0][0] parameter in constructor is empty.";
-      }
+      /* no title, set a test value */
+      return setTitle((<TTestSource>tests)[0]);
+    })((r: string) => this._title);
 
-      crypto.subtle
-        .digest("SHA-256", new TextEncoder().encode(tests[0][0].trim()))
-        .then((r) => this._id);
-      this._test = tests[0];
+    /* generate id */
+    crypto.subtle
+      .digest(
+        "SHA-256",
+        new TextEncoder().encode(
+          this.isGroup() ? this.title : this.test.expression,
+        ),
+      )
+      .then((r) => this._id);
+  }
+
+  private throwIfNotStartedTest(): boolean {
+    if (typeof this._test === undefined) {
+      throw "[testSolver] this getter (.test) was called before the definition in the class constructor.";
     }
+
+    return false;
+  }
+
+  /**
+   *
+   * @param x
+   */
+  public isGroup(): boolean {
+    return !this.throwIfNotStartedTest() && this._test === null;
+  }
+
+  /**
+   *
+   * @param x
+   */
+  public isTest(): boolean {
+    return !this.isGroup();
+  }
+
+  /**
+   *
+   */
+  public get title(): string {
+    return this._title;
   }
 
   /**
@@ -80,8 +181,14 @@ export class testSolver extends TIterator<testSolver> {
   /**
    *
    */
-  public get test(): null | TTestItemSource {
-    return this._test;
+  public get test(): TOneExplicitTest {
+    this.throwIfNotStartedTest();
+
+    if (typeof this._test === null) {
+      throw "[testSolver] this getter (.test) was called on group test.";
+    }
+
+    return <TOneExplicitTest>this._test;
   }
 
   /**
@@ -93,12 +200,7 @@ export class testSolver extends TIterator<testSolver> {
 
   private set status(v: TTestResult) {
     this._status = v;
-
-    if (typeof this.onStatusChange !== "function") {
-      return;
-    }
-
-    this.onStatusChange(this._id, this._status);
+    this.triggerStatusChange(this);
   }
 
   /**
@@ -118,31 +220,40 @@ export class testSolver extends TIterator<testSolver> {
     }
 
     this.status = this._approved;
-    this._test_pos = 0;
-    return this.onFinish(this._id, this.status);
+    this._indexTest = 0;
+  }
+
+  /**
+   *
+   * @param item
+   */
+  private triggerStatusChange(item: ItestSolver) {
+    typeof this.onStatusChange === "function" &&
+      this.onStatusChange(item.id, item.status, item);
   }
 
   /**
    *
    */
-  public onMyFinishChild(id: string, resp: TTestResult): void {
+  public onMyFinishChild(
+    id: string,
+    resp: TTestResult,
+    item?: ItestSolver,
+  ): void {
     if (id.trim().length === 0) {
-      throw "[testSolver] onFinishChild cannot receive an empty 'id' of child.";
+      throw "[testSolver] onMyFinishChild receive an empty 'id' of child.";
     }
 
     if (resp !== true && resp !== false) {
-      throw "[testSolver] onFinishChild cannot receive an uncompleted 'resp'.";
+      throw "[testSolver] onMyFinishChild receive an uncompleted 'resp'.";
     }
 
-    /* trigger an eventual event, if there is a callback  */
-    if (typeof this.onFinishChild === "function") {
-      this.onFinishChild(id, resp);
-    }
+    item && this.triggerStatusChange(item);
 
     this.updateStatus(resp);
 
-    if (this._test_pos < this.length) {
-      return this.at(this._test_pos++)?.run();
+    if (this._indexTest < this.length) {
+      return this.at(this._indexTest++)?.run();
     }
 
     this.finished();
@@ -168,24 +279,24 @@ export class testSolver extends TIterator<testSolver> {
     this.status = "running";
 
     /* Run first child */
-    if (this._test === null) {
+
+    if (this.isGroup()) {
       if (this.length === 0) {
         throw "[testSolver] is empty, but this._test is also null.";
       }
 
-      return this.at(this._test_pos++)?.run();
+      return this.at(this._indexTest++)?.run();
     }
 
     /* run myself test */
+
     if (this.length > 0) {
       throw "[testSolver] values ​​defined simultaneously as individual and group in '.run()'.";
     }
 
-    const TEST: TTestItemSource = this._test;
-
-    this.solver(TEST[0]).then((r: TPrintableEvalResult) => {
+    this.solver(this.test.expression).then((r: TPrintableEvalResult) => {
       /* if it is a number or string, normalizes both as string */
-      this.finished(String(TEST[1]) === String(r));
+      this.finished(String(this.test.expectedResult) === String(r));
     });
   }
 }

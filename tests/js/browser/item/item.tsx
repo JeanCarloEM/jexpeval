@@ -2,12 +2,32 @@ import { useEffect, useState } from "preact/hooks";
 import * as TT from "../../models/tester.js";
 
 export interface IItemViewProps {
-  source: TT.TTestItemSource;
-  caption?: null | string;
+  solver: TT.TSolverCall;
+  source: TT.TTestSource | TT.testSolver;
+  onStatusChange?: TT.TonTestStatusChange;
 }
 
-export default function ItemView({ source, caption = null }: IItemViewProps) {
+export default function ItemView({
+  solver,
+  source,
+  onStatusChange = undefined,
+}: IItemViewProps) {
   const [status, setStatus] = useState<TT.TTestResult>("not_started");
+
+  function onSolverChange(id: string, resp: TT.TTestResult): void {
+    setStatus(resp);
+
+    onStatusChange && onStatusChange(id, resp);
+  }
+
+  const [test] = useState<TT.testSolver>(
+    Array.isArray(source)
+      ? new TT.testSolver(source, solver, onSolverChange)
+      : source,
+  );
+
+  const isGroup: boolean = test.isGroup();
+
   var stt: string = "";
 
   useEffect(() => {
@@ -30,8 +50,26 @@ export default function ItemView({ source, caption = null }: IItemViewProps) {
   }, [status]);
 
   return (
-    <li data-ok={stt}>
-      <span>{caption}</span>
-    </li>
+    <div
+      data-ok={stt}
+      data-group={isGroup && "1"}
+      className={`testItemView ${isGroup && "1"}`}
+    >
+      <label for={test.id}>
+        <span>{test.title}</span>
+      </label>
+      {isGroup && <input type="checkbox" id={test.id}></input>}
+      {isGroup && (
+        <div>
+          {test.map((item) => {
+            <ItemView
+              solver={solver}
+              source={item}
+              onStatusChange={onStatusChange}
+            ></ItemView>;
+          })}
+        </div>
+      )}
+    </div>
   );
 }

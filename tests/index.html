@@ -38,17 +38,13 @@
       referrerpolicy="no-referrer"
     ></script>
 
-    <script type="module" src="js/tests.js"></script>
-    <!--
-    <script type="module" src="js/nav.js"></script>
-    -->
     <script type="module">
-      import { navtests } from "./js/browser.js";
-      navtests.run();
+      import { main } from "./js/browser/index.js";
+      main.run();
     </script>
   </head>
 
   <body>
-    <div class="items"></div>
+    <div class="root"></div>
   </body>
 </html>

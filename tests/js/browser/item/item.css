@@ -1,0 +1,1 @@
+.testItemView>label+input[type=checkbox]+div{margin-left:.5rem}.testItemView>label+input[type=checkbox]:not(:checked)+div{display:none}/*# sourceMappingURL=item.css.map */

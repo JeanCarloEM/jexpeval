@@ -1,0 +1,15 @@
+.testItemView {
+  > label {
+    & + input[type="checkbox"] {
+      & + div {
+        margin-left: 0.5rem;
+      }
+
+      &:not(:checked) {
+        & + div {
+          display: none;
+        }
+      }
+    }
+  }
+}

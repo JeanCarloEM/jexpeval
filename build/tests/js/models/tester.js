@@ -13,54 +13,100 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 import { TIterator } from "./iterator.js";
 var testSolver = (function (_super) {
     __extends(testSolver, _super);
-    function testSolver(tests, solver, onFinish, onFinishChild, onStatusChange) {
-        if (onFinishChild === void 0) { onFinishChild = null; }
+    function testSolver(tests, solver, onStatusChange) {
         if (onStatusChange === void 0) { onStatusChange = null; }
         var _this = _super.call(this, (function () {
-            if ((typeof tests !== "object") || (!Array.isArray(tests))) {
+            if (typeof tests !== "object" || !Array.isArray(tests)) {
                 throw "[testSolver] tests parameter isn't object array.";
             }
-            if (typeof onFinish !== 'function') {
-                throw "[testSolver] onFinish parameter isn't function.";
+            if (__spreadArray([], tests, true).length === 0) {
+                throw "[testSolver] tests parameter is empty.";
+            }
+            if (typeof tests[0] !== "string") {
+                return tests;
+            }
+            if (__spreadArray([], tests, true).length < 2) {
+                throw "[testSolver] test size is less than 2.";
+            }
+            if (typeof tests[1] !== "object") {
+                return [];
+            }
+            if (!Array.isArray(tests[1])) {
+                throw "[testSolver] tests is not a valid group, as [1] is not an array..";
             }
             var _self = [];
-            if (tests.length > 1) {
-                tests.map(function (item) {
-                    _self.push(new testSolver([item], _this.solver, _this.onMyFinishChild));
-                });
-                return _self;
-            }
-            return [];
+            tests[1].map(function (item) {
+                _self.push(new testSolver(item, _this.solver, _this.onMyFinishChild));
+            });
+            return _self;
         })()) || this;
         _this.solver = solver;
-        _this.onFinish = onFinish;
-        _this.onFinishChild = onFinishChild;
         _this.onStatusChange = onStatusChange;
-        _this._test = null;
+        _this._test = undefined;
         _this._status = "not_started";
         _this._approved = true;
-        _this._test_pos = 0;
+        _this._indexTest = 0;
         _this._id = "";
-        if (tests.length === 1) {
-            if (tests[0].length !== 2) {
+        _this._title = "";
+        (function (setTitle) {
+            if (_this.length > 0) {
+                _this._test = null;
+                return setTitle(tests[0].trim());
+            }
+            if (tests[1]) {
                 throw "[testSolver] tests[0] parameter in constructor don't contain 2 elements.";
             }
-            if (typeof tests[0][0] !== "string") {
-                throw "[testSolver] tests[0][0] parameter in constructor isn't string.";
+            _this._test = {
+                expression: tests[0],
+                expectedResult: tests[1],
+            };
+            if (tests.length === 3) {
+                if (typeof tests[2] !== "string") {
+                    throw "[testSolver] title isn't string in TOneTestItemSource.";
+                }
+                tests[2] = tests[2].trim();
+                if (tests[2].length > 0) {
+                    return setTitle(tests[2]);
+                }
             }
-            if (tests[0][0].trim().length === 0) {
-                throw "[testSolver] tests[0][0] parameter in constructor is empty.";
-            }
-            crypto.subtle
-                .digest("SHA-256", new TextEncoder().encode(tests[0][0].trim()))
-                .then(function (r) { return _this._id; });
-            _this._test = tests[0];
-        }
+            return setTitle(tests[0]);
+        })(function (r) { return _this._title; });
+        crypto.subtle
+            .digest("SHA-256", new TextEncoder().encode(_this.isGroup() ? _this.title : _this.test.expression))
+            .then(function (r) { return _this._id; });
         return _this;
     }
+    testSolver.prototype.throwIfNotStartedTest = function () {
+        if (typeof this._test === undefined) {
+            throw "[testSolver] this getter (.test) was called before the definition in the class constructor.";
+        }
+        return false;
+    };
+    testSolver.prototype.isGroup = function () {
+        return !this.throwIfNotStartedTest() && this._test === null;
+    };
+    testSolver.prototype.isTest = function () {
+        return !this.isGroup();
+    };
+    Object.defineProperty(testSolver.prototype, "title", {
+        get: function () {
+            return this._title;
+        },
+        enumerable: false,
+        configurable: true
+    });
     Object.defineProperty(testSolver.prototype, "id", {
         get: function () {
             return this._id;
@@ -70,6 +116,10 @@ var testSolver = (function (_super) {
     });
     Object.defineProperty(testSolver.prototype, "test", {
         get: function () {
+            this.throwIfNotStartedTest();
+            if (typeof this._test === null) {
+                throw "[testSolver] this getter (.test) was called on group test.";
+            }
             return this._test;
         },
         enumerable: false,
@@ -81,10 +131,7 @@ var testSolver = (function (_super) {
         },
         set: function (v) {
             this._status = v;
-            if (typeof this.onStatusChange !== "function") {
-                return;
-            }
-            this.onStatusChange(this._id, this._status);
+            this.triggerStatusChange(this);
         },
         enumerable: false,
         configurable: true
@@ -97,23 +144,24 @@ var testSolver = (function (_super) {
             this.updateStatus(state);
         }
         this.status = this._approved;
-        this._test_pos = 0;
-        return this.onFinish(this._id, this.status);
+        this._indexTest = 0;
     };
-    testSolver.prototype.onMyFinishChild = function (id, resp) {
+    testSolver.prototype.triggerStatusChange = function (item) {
+        typeof this.onStatusChange === "function" &&
+            this.onStatusChange(item.id, item.status, item);
+    };
+    testSolver.prototype.onMyFinishChild = function (id, resp, item) {
         var _a;
         if (id.trim().length === 0) {
-            throw "[testSolver] onFinishChild cannot receive an empty 'id' of child.";
+            throw "[testSolver] onMyFinishChild receive an empty 'id' of child.";
         }
         if (resp !== true && resp !== false) {
-            throw "[testSolver] onFinishChild cannot receive an uncompleted 'resp'.";
+            throw "[testSolver] onMyFinishChild receive an uncompleted 'resp'.";
         }
-        if (typeof this.onFinishChild === "function") {
-            this.onFinishChild(id, resp);
-        }
+        item && this.triggerStatusChange(item);
         this.updateStatus(resp);
-        if (this._test_pos < this.length) {
-            return (_a = this.at(this._test_pos++)) === null || _a === void 0 ? void 0 : _a.run();
+        if (this._indexTest < this.length) {
+            return (_a = this.at(this._indexTest++)) === null || _a === void 0 ? void 0 : _a.run();
         }
         this.finished();
     };
@@ -127,18 +175,17 @@ var testSolver = (function (_super) {
             this.finished(this.status);
         }
         this.status = "running";
-        if (this._test === null) {
+        if (this.isGroup()) {
             if (this.length === 0) {
                 throw "[testSolver] is empty, but this._test is also null.";
             }
-            return (_a = this.at(this._test_pos++)) === null || _a === void 0 ? void 0 : _a.run();
+            return (_a = this.at(this._indexTest++)) === null || _a === void 0 ? void 0 : _a.run();
         }
         if (this.length > 0) {
             throw "[testSolver] values ​​defined simultaneously as individual and group in '.run()'.";
         }
-        var TEST = this._test;
-        this.solver(TEST[0]).then(function (r) {
-            _this.finished(String(TEST[1]) === String(r));
+        this.solver(this.test.expression).then(function (r) {
+            _this.finished(String(_this.test.expectedResult) === String(r));
         });
     };
     return testSolver;

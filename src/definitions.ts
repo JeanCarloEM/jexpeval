@@ -11,7 +11,7 @@ export type TPrimitiveTypes =
   | undefined;
 
 export type TEvalResult = TPrimitiveTypes;
-export type TPrintableEvalResult = TPrimitiveTypes;
+export type TPrintableEvalResult = TPrimitivePrintableTypes;
 //export type TTypesProcessor = (input: ExpressionType) => Promise<TDefaultBaseType>;
 
 export type TGetCaller = (name: string, args: any[]) => Promise<TEvalResult>;

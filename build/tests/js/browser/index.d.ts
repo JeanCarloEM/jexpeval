@@ -1,7 +1,6 @@
-export declare abstract class navtests {
-    static onGroup(name: string): void;
-    static onGoupFinish(name: string, r: boolean): void;
-    static onItem(name: string, r: boolean): void;
+import { TTestResult } from "../models/tester.js";
+export declare abstract class main {
+    onStatusItemChange(id: string, resp: TTestResult): void;
     static run(): void;
 }
 //# sourceMappingURL=index.d.ts.map

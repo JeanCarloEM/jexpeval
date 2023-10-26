@@ -22,6 +22,11 @@
     "allowJs": true,
     "jsx": "react-jsx",
     "jsxImportSource": "preact",
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ],
     "paths": {
       "react": [
         "./node_modules/preact/compat/"
