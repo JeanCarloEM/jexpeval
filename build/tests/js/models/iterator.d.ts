@@ -1,6 +1,8 @@
 export declare abstract class TIterator<T> {
-    private readonly items;
-    constructor(items: T[]);
+    private _items;
+    constructor(_items: T[]);
+    incorporate(from: T[]): TIterator<T>;
+    recreateFrom(from: T[]): TIterator<T>;
     get length(): number;
     at(index: number): T | undefined;
     abstract toString(): string;

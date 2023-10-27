@@ -12,7 +12,7 @@ export function load() {
     return new Promise(function (R0, R_0) {
         console.log("Loading tests.");
         window
-            .fetch("../tests.json")
+            .fetch("tests.json")
             .then(function (r) { return r.json(); })
             .then(function (r) {
             console.log("Tests is loaded.");

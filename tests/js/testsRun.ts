@@ -23,7 +23,7 @@ export function load(): Promise<object> {
     console.log("Loading tests.");
 
     window
-      .fetch("../tests.json")
+      .fetch("tests.json")
       .then((r: any) => r.json())
       .then((r: object) => {
         console.log("Tests is loaded.");

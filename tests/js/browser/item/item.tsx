@@ -1,29 +1,41 @@
 import { useEffect, useState } from "preact/hooks";
 import * as TT from "../../models/tester.js";
 
+export type creatorTest = (
+  tests: TT.testSolver[] | TT.TTestSource,
+  onStatusChange: null | TT.TonTestStatusChange,
+) => TT.testSolver;
+
 export interface IItemViewProps {
-  solver: TT.TSolverCall;
+  creator: creatorTest;
   source: TT.TTestSource | TT.testSolver;
   onStatusChange?: TT.TonTestStatusChange;
 }
 
 export default function ItemView({
-  solver,
+  creator,
   source,
   onStatusChange = undefined,
 }: IItemViewProps) {
   const [status, setStatus] = useState<TT.TTestResult>("not_started");
 
-  function onSolverChange(id: string, resp: TT.TTestResult): void {
+  function onSolverChange(
+    id: string,
+    resp: TT.TTestResult,
+    item?: TT.ItestSolver,
+  ): void {
     setStatus(resp);
 
-    onStatusChange && onStatusChange(id, resp);
+    onStatusChange && onStatusChange(id, resp, item);
+  }
+
+  if (!creator) {
+    console.log(creator);
+    throw "undefined creator in ItemView";
   }
 
   const [test] = useState<TT.testSolver>(
-    Array.isArray(source)
-      ? new TT.testSolver(source, solver, onSolverChange)
-      : source,
+    Array.isArray(source) ? creator(source, onSolverChange) : source,
   );
 
   const isGroup: boolean = test.isGroup();
@@ -63,7 +75,7 @@ export default function ItemView({
         <div>
           {test.map((item) => {
             <ItemView
-              solver={solver}
+              creator={creator}
               source={item}
               onStatusChange={onStatusChange}
             ></ItemView>;

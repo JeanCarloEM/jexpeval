@@ -13,9 +13,18 @@ export type TOneExplicitTest = {
   expectedResult: TPrintableEvalResult;
 };
 
-export type TTestGroupSource = [title: string, tests: TOneTestItemSource[]];
+export type TNextedSubItems = (TOneTestItemSource | TNestedTestGroupSource)[];
 
-export type TTestSource = TOneTestItemSource | TTestGroupSource;
+export type TNestedTestGroupSource = [title: string, tests: TNextedSubItems];
+
+export enum EIdentifyTTestGroupSource {
+  isTNestedTestGroupSource = 0,
+  itsNotAGroup = 1,
+  isEmptyGroup = 2,
+  notAValidContentTests = 3,
+}
+
+export type TTestSource = TOneTestItemSource | TNestedTestGroupSource;
 
 export type TTestResult = "not_started" | "running" | true | false;
 
@@ -36,10 +45,11 @@ export type TonTestStatusChange = (
 
 export type TSolverCall = (str: string) => Promise<TPrintableEvalResult>;
 
-export type TTestMode = "group" | "test";
+export type TTestMode = "group" | TOneExplicitTest;
 
 export class testSolver extends TIterator<testSolver> implements ItestSolver {
-  private _test: null | undefined | TOneExplicitTest = undefined;
+  private _test: undefined | TTestMode = undefined;
+  private group: undefined | TNestedTestGroupSource = undefined;
   private _status: TTestResult = "not_started";
   private _approved: boolean = true;
   private _indexTest: number = 0;
@@ -51,95 +61,187 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
     private readonly solver: TSolverCall,
     private readonly onStatusChange: null | TonTestStatusChange = null,
   ) {
-    super(
-      <testSolver[]>(() => {
-        if (typeof tests !== "object" || !Array.isArray(tests)) {
-          throw "[testSolver] tests parameter isn't object array.";
-        }
-
-        if ([...tests].length === 0) {
-          throw "[testSolver] tests parameter is empty.";
-        }
-
-        /* is a array of testSolver, passthrough this for iterator */
-        if (typeof tests[0] !== "string") {
-          return tests;
-        }
-
-        if ([...tests].length < 2) {
-          throw "[testSolver] test size is less than 2.";
-        }
-
-        /* Is a one test, passthrough empty for iterator */
-        if (typeof tests[1] !== "object") {
-          return [];
-        }
-
-        /* is a test group,  */
-
-        if (!Array.isArray(tests[1])) {
-          throw "[testSolver] tests is not a valid group, as [1] is not an array..";
-        }
-
-        /* is TTestSource */
-
-        var _self: testSolver[] = [];
-
-        tests[1].map((item) => {
-          _self.push(new testSolver(item, this.solver, this.onMyFinishChild));
-        });
-
-        return _self;
-      })(),
-    );
-
-    ((setTitle) => {
-      /* set type mode as group */
-      if (this.length > 0) {
-        this._test = null;
-        return setTitle((<TTestSource>tests)[0].trim());
-      }
-
-      /* is test */
-
-      if (tests[1]) {
-        throw "[testSolver] tests[0] parameter in constructor don't contain 2 elements.";
-      }
-
-      /* set test */
-      this._test = <TOneExplicitTest>{
-        expression: tests[0],
-        expectedResult: tests[1],
-      };
-
-      /* if title is passed in ONE test */
-      if (tests.length === 3) {
-        if (typeof tests[2] !== "string") {
-          throw `[testSolver] title isn't string in TOneTestItemSource.`;
-        }
-
-        tests[2] = tests[2].trim();
-
-        if (tests[2].length > 0) {
-          return setTitle(tests[2]);
-        }
-      }
-
-      /* no title, set a test value */
-      return setTitle((<TTestSource>tests)[0]);
-    })((r: string) => this._title);
-
-    /* generate id */
-    crypto.subtle
-      .digest(
-        "SHA-256",
-        new TextEncoder().encode(
-          this.isGroup() ? this.title : this.test.expression,
-        ),
-      )
-      .then((r) => this._id);
+    super(<testSolver[]>[]);
+    this.__startMe(tests);
   }
 
+  /**
+   * recursive constructor
+   *
+   * @param tests
+   * @returns
+   */
+  private __startMe(tests: testSolver[] | TTestSource): void {
+    const setTitle = (r: string) =>
+      r.trim().length > 0 ? (this._title = r.trim()) : false;
+
+    const terminate = (title: string = "") => {
+      setTitle(title);
+
+      /* try generate title */
+      if (this.title.length === 0 && !this.isGroup()) {
+        setTitle(this.test.expression);
+      }
+
+      this._test = typeof this._test === undefined ? "group" : this._test;
+
+      /* generate id */
+      crypto.subtle
+        .digest("SHA-256", new TextEncoder().encode(this.title))
+        .then((r) => this._id);
+    };
+
+    const T: EIdentifyTTestGroupSource =
+      testSolver.identifyTTestGroupSource(tests);
+
+    /**
+     * It's not a group
+     */
+    if (T === EIdentifyTTestGroupSource.itsNotAGroup) {
+      if (typeof tests !== "object" || !Array.isArray(tests)) {
+        throw "[testSolver] tests parameter isn't object array.";
+      }
+
+      if ([...tests].length === 0) {
+        throw "[testSolver] tests parameter is empty.";
+      }
+
+      /*
+       * 1/3: It's probably the testSolver[], pass this to the iterator
+       */
+      if (typeof tests[0] !== "string") {
+        if (typeof tests[0] !== "object" || !(tests[0] instanceof testSolver)) {
+          throw "[testSolver] tests[0] was expected to be a testSolver.";
+        }
+
+        this.recreateFrom(<testSolver[]>tests);
+        return terminate();
+      }
+
+      /**
+       * 2/3: is probably a TOneTestItemSource
+       */
+
+      if ([...tests].length < 2) {
+        throw "[testSolver] test size is less than 2.";
+      }
+
+      if (testSolver.isTOneTestItemSource(tests)) {
+        this._test = <TOneExplicitTest>{
+          expression: tests[0],
+          expectedResult: tests[1],
+        };
+
+        if (tests.length > 2) {
+          this._title = <string>(<TOneTestItemSource>tests)[2];
+        }
+
+        return terminate();
+      }
+
+      throw "[testSolver] parameters tests in testSolver.constructor is not valid (unexpected error).";
+    }
+
+    /**
+     * 3/3: A. Group with only one element
+     */
+    if ((<TNestedTestGroupSource>tests)[1].length === 1) {
+      /* reset tests to one sub test */
+      return this.__startMe(<TTestSource>(<TNestedTestGroupSource>tests)[1][0]);
+    }
+
+    /**
+     * 3/3: B. It's probably a group with many elements
+     */
+    setTitle((<TNestedTestGroupSource>tests)[0]);
+    var _self: testSolver[] = [];
+
+    (<TNestedTestGroupSource>tests)[1].map((item) => {
+      _self.push(new testSolver(item, this.solver, this.onMyFinishChild));
+    });
+
+    return terminate();
+  }
+
+  /**
+   * check if X is compatible with [string, TPrintableEvalResult, string?]
+   *
+   * @param x
+   * @returns
+   */
+  public static isTOneTestItemSource(x: any): boolean {
+    return (
+      /* is a array */
+      typeof x === "object" &&
+      Array.isArray(x) &&
+      /* is a compatible array [string, TPrintableEvalResult, string?] */
+      x.length >= 2 &&
+      /* [1] is compatible  TPrintableEvalResult */
+      typeof x[0] === "string" &&
+      (typeof x[1] === "string" ||
+        typeof x[1] === "number" ||
+        typeof x[1] === "bigint") &&
+      /* [2] is compatible string */
+      (x.length === 2 || (x.length === 3 && typeof x[2] === "string"))
+    );
+  }
+
+  /**
+   * check if X is compatibility with [string, []]
+   *
+   * @param x
+   * @returns
+   */
+  public static itsSuperficialGroupCompatibility(x: any): boolean {
+    return (
+      /* is a array */
+      typeof x === "object" &&
+      Array.isArray(x) &&
+      /* is not a compatible array [string, []] */
+      x.length === 2 &&
+      typeof x[0] === "string" &&
+      typeof x[1] === "object" &&
+      Array.isArray(x[1])
+    );
+  }
+
+  /**
+   *
+   * @param input
+   * @returns
+   */
+  public static identifyTTestGroupSource(
+    input: any,
+  ): EIdentifyTTestGroupSource {
+    /**
+     * FIRST compatibility check
+     */
+
+    if (!testSolver.itsSuperficialGroupCompatibility(input)) {
+      return EIdentifyTTestGroupSource.itsNotAGroup;
+    }
+
+    /**
+     * is PROBABLY compatible with a group
+     */
+
+    const tests: TNextedSubItems = input[1];
+
+    if (tests.length === 0) {
+      return EIdentifyTTestGroupSource.isEmptyGroup;
+    }
+
+    /**
+     * IS compatible with a group
+     * Check whether inputs[1] (tests) is compatible with TOneTestItemSource or TNestedTestGroupSource
+     */
+    return EIdentifyTTestGroupSource.isTNestedTestGroupSource;
+  }
+
+  /**
+   *
+   * @returns
+   */
   private throwIfNotStartedTest(): boolean {
     if (typeof this._test === undefined) {
       throw "[testSolver] this getter (.test) was called before the definition in the class constructor.";
@@ -153,7 +255,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
    * @param x
    */
   public isGroup(): boolean {
-    return !this.throwIfNotStartedTest() && this._test === null;
+    return !this.throwIfNotStartedTest() && this._test === "group";
   }
 
   /**
@@ -168,7 +270,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
    *
    */
   public get title(): string {
-    return this._title;
+    return this._title.trim();
   }
 
   /**
