@@ -1,6 +1,6 @@
 export abstract class TIterator<T> {
-  constructor(private _items: T[]) {
-    if (typeof _items !== "object" || !Array.isArray(_items)) {
+  constructor(private __items: T[]) {
+    if (typeof __items !== "object" || !Array.isArray(__items)) {
       throw "[TIterator] items parameter isn't object array.";
     }
   }
@@ -10,7 +10,7 @@ export abstract class TIterator<T> {
    * @param from
    */
   public incorporate(from: T[]): TIterator<T> {
-    this._items = this._items.concat(from);
+    this.__items = this.__items.concat(from);
     return this;
   }
 
@@ -20,7 +20,7 @@ export abstract class TIterator<T> {
    * @param from
    */
   public recreateFrom(from: T[]): TIterator<T> {
-    this._items = <T[]>[...from];
+    this.__items = <T[]>[...from];
     return this;
   }
 
@@ -28,7 +28,7 @@ export abstract class TIterator<T> {
    *
    */
   public get length(): number {
-    return this._items.length;
+    return this.__items.length;
   }
 
   /**
@@ -37,7 +37,7 @@ export abstract class TIterator<T> {
    * Negative integers count back from the last item in the array.
    */
   public at(index: number): T | undefined {
-    return this._items.at(index);
+    return this.__items.at(index);
   }
 
   /**
@@ -69,28 +69,28 @@ export abstract class TIterator<T> {
    * Returns an iterable of key, value pairs for every entry in the array
    */
   public entries(): IterableIterator<[number, T]> {
-    return this._items.entries();
+    return this.__items.entries();
   }
 
   /**
    * Returns an iterable of keys in the array
    */
   public keys(): IterableIterator<number> {
-    return this._items.keys();
+    return this.__items.keys();
   }
 
   /**
    * Returns an iterable of values in the array
    */
   public values(): IterableIterator<T> {
-    return this._items.values();
+    return this.__items.values();
   }
 
   /**
    * Returns a string representation of an array. The elements are converted to string using their toLocaleString methods.
    */
   public toLocaleString(): string {
-    return this._items.toLocaleString();
+    return this.__items.toLocaleString();
   }
 
   /**
@@ -98,7 +98,7 @@ export abstract class TIterator<T> {
    * If the array is empty, undefined is returned and the array is not modified.
    */
   public pop(): T | undefined {
-    return this._items.pop();
+    return this.__items.pop();
   }
 
   /**
@@ -106,7 +106,7 @@ export abstract class TIterator<T> {
    * @param items New elements to add to the array.
    */
   public push(...items: T[]): number {
-    return this._items.push(...items);
+    return this.__items.push(...items);
   }
 
   /**
@@ -117,7 +117,7 @@ export abstract class TIterator<T> {
   public concat(...items: ConcatArray<T>[]): T[];
   public concat(...items: (T | ConcatArray<T>)[]): T[];
   public concat(...items: any[]): T[] {
-    return this._items.concat(items);
+    return this.__items.concat(items);
   }
 
   /**
@@ -125,7 +125,7 @@ export abstract class TIterator<T> {
    * @param separator A string used to separate one element of the array from the next in the resulting string. If omitted, the array elements are separated with a comma.
    */
   public join(separator?: string): string {
-    return this._items.join(separator);
+    return this.__items.join(separator);
   }
 
   /**
@@ -141,7 +141,7 @@ export abstract class TIterator<T> {
    * If the array is empty, undefined is returned and the array is not modified.
    */
   public shift(): T | undefined {
-    return this._items.shift();
+    return this.__items.shift();
   }
 
   /**
@@ -154,7 +154,7 @@ export abstract class TIterator<T> {
    * If end is undefined, then the slice extends to the end of the array.
    */
   public slice(start?: number, end?: number): T[] {
-    return this._items.slice(start, end);
+    return this.__items.slice(start, end);
   }
 
   /**
@@ -168,7 +168,7 @@ export abstract class TIterator<T> {
    * ```
    */
   public sort(compareFn?: (a: T, b: T) => number): this {
-    this._items.sort(compareFn);
+    this.__items.sort(compareFn);
     return this;
   }
 
@@ -183,14 +183,14 @@ export abstract class TIterator<T> {
   public splice(start: number, deleteCount: number, ...items: T[]): T[];
   public splice(start: number, deleteCount?: any, ...items: T[]): T[] {
     if (typeof items !== "undefined") {
-      return this._items.splice(start, deleteCount, ...items);
+      return this.__items.splice(start, deleteCount, ...items);
     }
 
     if (typeof deleteCount !== "undefined") {
-      return this._items.splice(start, deleteCount);
+      return this.__items.splice(start, deleteCount);
     }
 
-    return this._items.splice(start);
+    return this.__items.splice(start);
   }
 
   /**
@@ -198,7 +198,7 @@ export abstract class TIterator<T> {
    * @param items Elements to insert at the start of the array.
    */
   public unshift(...items: T[]): number {
-    return this._items.unshift(...items);
+    return this.__items.unshift(...items);
   }
 
   /**
@@ -207,7 +207,7 @@ export abstract class TIterator<T> {
    * @param fromIndex The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0.
    */
   public indexOf(searchElement: T, fromIndex?: number): number {
-    return this._items.indexOf(searchElement, fromIndex);
+    return this.__items.indexOf(searchElement, fromIndex);
   }
 
   /**
@@ -216,7 +216,7 @@ export abstract class TIterator<T> {
    * @param fromIndex The array index at which to begin searching backward. If fromIndex is omitted, the search starts at the last index in the array.
    */
   public lastIndexOf(searchElement: T, fromIndex?: number): number {
-    return this._items.lastIndexOf(searchElement, fromIndex);
+    return this.__items.lastIndexOf(searchElement, fromIndex);
   }
 
   /**
@@ -239,7 +239,7 @@ export abstract class TIterator<T> {
     predicate: (value: T, index: number, array: T[]) => any,
     thisArg?: any,
   ): any {
-    return this._items.every(predicate, thisArg);
+    return this.__items.every(predicate, thisArg);
   }
 
   /**
@@ -254,7 +254,7 @@ export abstract class TIterator<T> {
     predicate: (value: T, index: number, array: T[]) => unknown,
     thisArg?: any,
   ): boolean {
-    return this._items.some(predicate, thisArg);
+    return this.__items.some(predicate, thisArg);
   }
 
   /**
@@ -266,7 +266,7 @@ export abstract class TIterator<T> {
     callbackfn: (value: T, index: number, array: T[]) => void,
     thisArg?: any,
   ): void {
-    return this._items.forEach(callbackfn, thisArg);
+    return this.__items.forEach(callbackfn, thisArg);
   }
 
   /**
@@ -278,7 +278,7 @@ export abstract class TIterator<T> {
     callbackfn: (value: T, index: number, array: T[]) => U,
     thisArg?: any,
   ): U[] {
-    return this._items.map(callbackfn, thisArg);
+    return this.__items.map(callbackfn, thisArg);
   }
   /**
    * Returns the elements of an array that meet the condition specified in a callback function.
@@ -297,7 +297,7 @@ export abstract class TIterator<T> {
     predicate: (value: T, index: number, array: T[]) => any,
     thisArg?: any,
   ): any {
-    return this._items.filter(predicate, thisArg);
+    return this.__items.filter(predicate, thisArg);
   }
 
   /**
@@ -340,7 +340,7 @@ export abstract class TIterator<T> {
     ) => any,
     initialValue?: any,
   ): any {
-    return this._items.reduce(callbackfn, initialValue);
+    return this.__items.reduce(callbackfn, initialValue);
   }
 
   /**
@@ -383,6 +383,6 @@ export abstract class TIterator<T> {
     ) => any,
     initialValue?: any,
   ): any {
-    return this._items.reduceRight(callbackfn, initialValue);
+    return this.__items.reduceRight(callbackfn, initialValue);
   }
 }
