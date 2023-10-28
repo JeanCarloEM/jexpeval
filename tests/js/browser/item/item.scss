@@ -1,13 +1,138 @@
 .testItemView {
   > label {
-    & + input[type="checkbox"] {
-      & + div {
-        margin-left: 0.5rem;
+    display: block;
+    border: 1px solid rgba($color: #2b92db, $alpha: 0.1);
+    padding: 0.2rem 1rem;
+    padding-left: 2.5rem;
+    border-radius: 0.3rem;
+    margin: 0.3rem;
+    background: #efefef;
+
+    &,
+    > * {
+      &::after,
+      &::before {
+        font-family: "Font Awesome 6 Free";
+        position: absolute;
+      }
+    }
+
+    &::before {
+      content: "\f120";
+      font-weight: bold;
+      margin-left: -1.7rem;
+      opacity: 0.4;
+    }
+
+    @keyframes spinningTestItemView {
+      0% {
+        transform: rotate(0);
       }
 
-      &:not(:checked) {
-        & + div {
-          display: none;
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    &::after {
+      content: "\f141";
+      right: 1.4rem;
+      top: 1.05rem;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #999;
+    }
+
+    > span {
+      display: block;
+
+      &::after {
+        opacity: 0.7;
+      }
+    }
+
+    &:hover {
+      background-color: #2b92db;
+
+      &,
+      > * {
+        &,
+        &::after,
+        &::before {
+          color: #fff;
+        }
+      }
+    }
+
+    & + div.subgroup {
+      border-left: 1px solid #2b92db;
+      margin-left: 1rem;
+      display: none;
+    }
+  }
+
+  &.ok {
+    > label {
+      &::after {
+        content: "\f058";
+        color: green;
+      }
+    }
+  }
+
+  &.fail {
+    > label {
+      &:active {
+        content: "\f06a";
+        color: orangered;
+      }
+    }
+  }
+
+  &.running {
+    > label {
+      &::after {
+        content: "f7b9";
+        color: #222;
+        animation: spinningTestItemView 1s infinite linear;
+      }
+    }
+  }
+
+  > input[type="checkbox"] {
+    position: fixed;
+
+    & + label {
+      cursor: pointer;
+
+      &::before {
+        content: "\f07b";
+      }
+
+      > span {
+        &::after {
+          content: "\f054";
+          right: 3.5rem;
+          font-weight: bold;
+        }
+      }
+    }
+
+    &:checked {
+      & + label {
+        &::before {
+          font-weight: normal;
+          content: "\f07c";
+        }
+
+        > span {
+          &::after {
+            content: "\f054";
+          }
+        }
+
+        & + div.subgroup {
+          display: block;
         }
       }
     }
