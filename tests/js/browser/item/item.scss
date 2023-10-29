@@ -68,9 +68,21 @@
 
   &[data-ok="true"] {
     > label {
+      background: rgba($color: green, $alpha: 0.1);
+      border-color: rgba($color: green, $alpha: 0.2);
+
       &::after {
         content: "\f058";
         color: green;
+        opacity: 1;
+      }
+
+      &:hover {
+        background: green;
+
+        &::after {
+          color: #fff;
+        }
       }
     }
   }
