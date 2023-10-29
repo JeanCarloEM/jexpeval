@@ -25,6 +25,8 @@ export abstract class main {
 
     ref?: ItestSolver,
   ) {
+    if (partial) return;
+
     switch (targetStatus) {
       case "running":
         console.log(`Running '${ref && ref.title}'.`);

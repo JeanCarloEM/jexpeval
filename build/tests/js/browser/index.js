@@ -5,6 +5,8 @@ var main = (function () {
     function main() {
     }
     main.onStatusItemChange = function (targetId, targetStatus, partial, ref) {
+        if (partial)
+            return;
         switch (targetStatus) {
             case "running":
                 console.log("Running '".concat(ref && ref.title, "'."));

@@ -89,7 +89,7 @@ var testSolver = (function (_super) {
                         return generateUniqueIDforMe(true);
                     }
                     if (!isUnique) {
-                        console.error("[testSolver] duplicated test, '".concat(_this.title, "'"));
+                        throw "[testSolver] duplicated test, '".concat(_this.title, "'");
                     }
                     testSolver.__inputs.tests[testSolver.__inputs.ids.push(new_uid)] =
                         _this;
@@ -218,7 +218,6 @@ var testSolver = (function (_super) {
         set: function (v) {
             if (this._status !== v) {
                 this._status = v;
-                console.log("'".concat(this.title, "' finished."));
                 this.triggerStatusChange(this, this.isGroup() && this._indexTest < this.length);
             }
         },
@@ -238,7 +237,6 @@ var testSolver = (function (_super) {
                 return this.triggerStatusChange(targetId, targetStatus, true);
             }
             if (this._indexTest < this.length) {
-                console.warn("'".concat(this.title, "' rodou o pr\u00F3ximo."));
                 this.triggerStatusChange(targetId, targetStatus, true);
                 (function (run) {
                     if (_this.delayBetween > 0) {

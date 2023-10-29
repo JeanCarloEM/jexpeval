@@ -138,7 +138,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
           }
 
           if (!isUnique) {
-            console.error(`[testSolver] duplicated test, '${this.title}'`);
+            throw `[testSolver] duplicated test, '${this.title}'`;
           }
 
           testSolver.__inputs.tests[testSolver.__inputs.ids.push(new_uid)] =
@@ -392,8 +392,6 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
     if (this._status !== v) {
       this._status = v;
 
-      console.log(`'${this.title}' finished.`);
-
       this.triggerStatusChange(
         this,
         this.isGroup() && this._indexTest < this.length,
@@ -423,7 +421,6 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
       }
 
       if (this._indexTest < this.length) {
-        console.warn(`'${this.title}' rodou o próximo.`);
         this.triggerStatusChange(targetId, targetStatus, true);
         ((run) => {
           if (this.delayBetween > 0) {
