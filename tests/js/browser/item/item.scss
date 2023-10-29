@@ -66,7 +66,7 @@
     }
   }
 
-  &[data-ok="2"] {
+  &[data-ok="true"] {
     > label {
       &::after {
         content: "\f058";
@@ -75,19 +75,32 @@
     }
   }
 
-  &[data-ok="3"] {
+  &.fail,
+  &[data-ok="false"] {
     > label {
-      &:active {
+      background: rgba($color: red, $alpha: 0.1);
+      border-color: rgba($color: red, $alpha: 0.2);
+
+      &::after {
         content: "\f06a";
         color: orangered;
+        opacity: 1;
+      }
+
+      &:hover {
+        background: orangered;
+
+        &::after {
+          color: #fff;
+        }
       }
     }
   }
 
-  &[data-ok="1"] {
+  &[data-ok="run"] {
     > label {
       &::after {
-        content: "f7b9";
+        content: "\f7b9";
         color: #222;
         animation: spinningTestItemView 1s infinite linear;
       }

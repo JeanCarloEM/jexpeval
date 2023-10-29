@@ -27,9 +27,11 @@ export abstract class main {
         break;
 
       case true:
+        console.log(`OK '${item && item.title}'.`);
         break;
 
       case false:
+        console.error(`FAIL '${item && item.title}'.`);
         break;
 
       default:
@@ -50,6 +52,10 @@ export abstract class main {
           }),
           <Element>document.querySelector("body > div.root"),
         );
+
+        setTimeout(() => {
+          r.run();
+        }, 10);
       });
   }
 }

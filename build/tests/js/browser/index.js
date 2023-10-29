@@ -10,8 +10,10 @@ var main = (function () {
                 console.log("Running '".concat(item && item.title, "'."));
                 break;
             case true:
+                console.log("OK '".concat(item && item.title, "'."));
                 break;
             case false:
+                console.error("FAIL '".concat(item && item.title, "'."));
                 break;
             default:
                 break;
@@ -26,6 +28,9 @@ var main = (function () {
                 source: r,
                 onStatusChange: _this.onStatusItemChange,
             }), document.querySelector("body > div.root"));
+            setTimeout(function () {
+                r.run();
+            }, 10);
         });
     };
     return main;

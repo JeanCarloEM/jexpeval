@@ -17,6 +17,7 @@ export default function ItemView({
   creator = undefined,
   onStatusChange = undefined,
 }: IItemViewProps) {
+  const [hasFalse, setHasFalse] = useState<Boolean>(false);
   const [status, setStatus] = useState<TT.TTestResult>("not_started");
 
   function onSolverChange(
@@ -24,9 +25,9 @@ export default function ItemView({
     resp: TT.TTestResult,
     item?: TT.ItestSolver,
   ): void {
-    setStatus(resp);
-
     onStatusChange && onStatusChange(id, resp, item);
+    setStatus(test.status);
+    setHasFalse(hasFalse || resp === false);
   }
 
   function _creator(): TT.testSolver {
@@ -51,32 +52,22 @@ export default function ItemView({
   const isGroup: boolean = test.isGroup();
   const hasId: boolean = test.id.trim().length > 0;
 
-  var stt: string = "";
-
-  useEffect(() => {
-    switch (status) {
-      case "running":
-        stt = "1";
-        break;
-
-      case true:
-        stt = "2";
-        break;
-
-      case false:
-        stt = "3";
-        break;
-
-      default:
-        break;
-    }
-  }, [status]);
+  useEffect(() => {}, [status, hasFalse]);
 
   return (
     <div
-      data-ok={stt}
-      data-group={isGroup && "1"}
-      className={`testItemView ${isGroup ? "testGroupView" : ""}`}
+      data-ok={
+        status === "running"
+          ? "run"
+          : status === true
+          ? "true"
+          : status === false
+          ? "false"
+          : ""
+      }
+      className={`testItemView ${isGroup ? "testGroupView" : ""} ${
+        hasFalse ? "fail" : ""
+      }`}
     >
       {isGroup && hasId && <input type="checkbox" id={test.id}></input>}
       {hasId && (
@@ -91,7 +82,7 @@ export default function ItemView({
               <ItemView
                 creator={creator}
                 source={item}
-                onStatusChange={onStatusChange}
+                onStatusChange={onSolverChange}
               ></ItemView>
             );
           })}
