@@ -38,9 +38,14 @@ export interface ItestSolver {
 }
 
 export type TonTestStatusChange = (
-  id: string,
-  resp: TTestResult,
-  item?: ItestSolver,
+  /* the id of the test that generated the event */
+  targetId: string,
+  /* the status of the test that generated the event */
+  targetStatus: TTestResult,
+  /* true it is a non-conclusive event */
+  partial: boolean,
+  /* the test object that generated the event */
+  ref?: ItestSolver,
 ) => void;
 
 export type TSolverCall = (str: string) => Promise<TPrintableEvalResult>;
@@ -65,7 +70,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
   constructor(
     tests: testSolver[] | TTestSource,
     private readonly solver: TSolverCall,
-    private onStatusChange: null | TonTestStatusChange = null,
+    private onStatusChange: TonTestStatusChange | TonTestStatusChange[] = [],
   ) {
     super(<testSolver[]>[]);
     this.__startMe(tests);
@@ -210,7 +215,20 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
     setTitle((<TNestedTestGroupSource>tests)[0]);
 
     (<TNestedTestGroupSource>tests)[1].map((item) => {
-      this.push(new testSolver(item, this.solver, this.onMyFinishChild));
+      this.push(
+        new testSolver(
+          item,
+          this.solver,
+          (
+            targetId: string,
+            targetStatus: TTestResult,
+            partial: boolean,
+            ref?: ItestSolver,
+          ) => {
+            this.updateParcialStatus(targetId, targetStatus, partial);
+          },
+        ),
+      );
     });
 
     return terminate();
@@ -369,76 +387,135 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
   }
 
   private set status(v: TTestResult) {
-    this._status = v;
-    this.triggerStatusChange(this);
-  }
+    if (this._status !== v) {
+      this._status = v;
 
-  /**
-   *
-   * @param state
-   */
-  protected updateStatus(state: TTestResult): void {
-    this._approved = this._approved && state === true;
-  }
+      console.log(`'${this.title}' finished.`);
 
-  /**
-   *
-   */
-  protected finished(state?: TTestResult): void {
-    if (state === true || state === false) {
-      this.updateStatus(state);
+      this.triggerStatusChange(
+        this,
+        this.isGroup() && this._indexTest < this.length,
+      );
     }
+  }
 
-    this.status = this._approved;
-    this._indexTest = 0;
+  /**
+   *
+   * @param targetStatus
+   */
+  protected updateParcialStatus(
+    targetId: string,
+    targetStatus: TTestResult,
+    partial: boolean = false,
+  ): void {
+    if (targetStatus === false || targetStatus === true) {
+      if (!this.isGroup()) {
+        this.status = targetStatus;
+        return;
+      }
+
+      this._approved = this._approved && targetStatus;
+
+      if (partial) {
+        return this.triggerStatusChange(targetId, targetStatus, true);
+      }
+
+      if (this._indexTest < this.length) {
+        console.warn(`'${this.title}' rodou o próximo.`);
+        this.triggerStatusChange(targetId, targetStatus, true);
+        setTimeout(() => {
+          this.at(this._indexTest++)?.run();
+        }, 1000);
+        return;
+      }
+
+      this.status = this._approved;
+    }
   }
 
   /**
    *
    * @param newOnStatusChange
    */
-  public setOnStatusChange(newOnStatusChange: TonTestStatusChange): void {
+  public addOnStatusChange(newOnStatusChange: TonTestStatusChange): void {
     if (typeof newOnStatusChange !== "function") {
       throw "[testSolver] newOnStatusChange is not a function.";
     }
 
-    this.onStatusChange = newOnStatusChange;
+    if (typeof this.onStatusChange === "function") {
+      this.onStatusChange = [this.onStatusChange];
+    }
+
+    (<TonTestStatusChange[]>this.onStatusChange).push(newOnStatusChange);
   }
 
   /**
    *
-   * @param item
+   * @param item the test object that caused the event
    */
-  private triggerStatusChange(item: ItestSolver) {
-    typeof this.onStatusChange === "function" &&
-      this.onStatusChange(item.id, item.status, item);
-  }
+  private triggerStatusChange(target: ItestSolver, partial: boolean): void;
 
   /**
    *
+   * @param targetIs the id of the test that generated the event
+   * @param targetStatus the status of the test that generated the event
+   * @param red the test object that caused the event
    */
-  public onMyFinishChild(
-    id: string,
-    resp: TTestResult,
-    item?: ItestSolver,
+  private triggerStatusChange(
+    targetId: string,
+    targetStatus: TTestResult,
+    partial: boolean,
+  ): void;
+
+  /**
+   *
+   * @param target the id of the test that generated the event or the object test itself
+   * @param status the status of the test that generated the event or the test itself
+   * @param ref the test object that caused the event
+   */
+  private triggerStatusChange(
+    target: string | ItestSolver,
+    statusOrPartial?: TTestResult | boolean,
+    partial: boolean = false,
   ): void {
-    if (id.trim().length === 0) {
-      throw "[testSolver] onMyFinishChild receive an empty 'id' of child.";
-    }
+    this.onStatusChange =
+      typeof this.onStatusChange === "function"
+        ? [this.onStatusChange]
+        : this.onStatusChange;
 
-    if (resp !== true && resp !== false) {
-      throw "[testSolver] onMyFinishChild receive an uncompleted 'resp'.";
-    }
+    (<TonTestStatusChange[]>this.onStatusChange).map((f) => {
+      if (typeof target === "object") {
+        if (typeof statusOrPartial !== "boolean") {
+          throw [
+            `[testSolver] triggerStatusChange: statusOrPartial parameter is invalid.`,
+            statusOrPartial,
+          ];
+        }
 
-    item && this.triggerStatusChange(item);
+        return f(
+          (<ItestSolver>target).id,
+          (<ItestSolver>target).status,
+          <boolean>statusOrPartial,
+          this,
+        );
+      }
 
-    this.updateStatus(resp);
+      if (typeof statusOrPartial === "undefined") {
+        throw [
+          `[testSolver] statusOrPartial: resp parameter is invalid.`,
+          statusOrPartial,
+        ];
+      }
 
-    if (this._indexTest < this.length) {
-      return this.at(this._indexTest++)?.run();
-    }
+      if (typeof target === "string") {
+        return f(target, <TTestResult>statusOrPartial, partial, this);
+      }
 
-    this.finished();
+      throw [
+        `[testSolver] triggerStatusChange: target parameter is invalid.`,
+        target,
+      ];
+    });
   }
 
   /**
@@ -455,7 +532,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
   public run(): void {
     /* ist finished */
     if (this.status === false || this.status === true) {
-      this.finished(this.status);
+      return this.updateParcialStatus(this.id, this.status, false);
     }
 
     this.status = "running";
@@ -478,7 +555,11 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
 
     this.solver(this.test.expression).then((r: TPrintableEvalResult) => {
       /* if it is a number or string, normalizes both as string */
-      this.finished(String(this.test.expectedResult) === String(r));
+      this.updateParcialStatus(
+        this.id,
+        String(this.test.expectedResult) === String(r),
+        false,
+      );
     });
   }
 }

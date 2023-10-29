@@ -17,21 +17,25 @@ export abstract class main {
    * @returns
    */
   public static onStatusItemChange(
-    id: string,
-    resp: TTestResult,
-    item?: ItestSolver,
+    targetId: string,
+
+    targetStatus: TTestResult,
+
+    partial: boolean,
+
+    ref?: ItestSolver,
   ) {
-    switch (resp) {
+    switch (targetStatus) {
       case "running":
-        console.log(`Running '${item && item.title}'.`);
+        console.log(`Running '${ref && ref.title}'.`);
         break;
 
       case true:
-        console.log(`OK '${item && item.title}'.`);
+        console.log(`OK '${ref && ref.title}'.`);
         break;
 
       case false:
-        console.error(`FAIL '${item && item.title}'.`);
+        console.error(`FAIL '${ref && ref.title}'.`);
         break;
 
       default:

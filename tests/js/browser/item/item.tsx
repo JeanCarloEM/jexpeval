@@ -21,13 +21,14 @@ export default function ItemView({
   const [status, setStatus] = useState<TT.TTestResult>("not_started");
 
   function onSolverChange(
-    id: string,
-    resp: TT.TTestResult,
-    item?: TT.ItestSolver,
+    targetId: string,
+    targetStatus: TT.TTestResult,
+    partial: boolean,
+    ref?: TT.ItestSolver,
   ): void {
-    onStatusChange && onStatusChange(id, resp, item);
+    onStatusChange && onStatusChange(targetId, targetStatus, partial, ref);
     setStatus(test.status);
-    setHasFalse(hasFalse || resp === false);
+    setHasFalse(hasFalse || targetStatus === false);
   }
 
   function _creator(): TT.testSolver {
@@ -43,7 +44,7 @@ export default function ItemView({
       return creator(source, onSolverChange);
     }
 
-    source.setOnStatusChange(onSolverChange);
+    source.addOnStatusChange(onSolverChange);
 
     return source;
   }

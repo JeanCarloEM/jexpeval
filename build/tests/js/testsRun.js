@@ -1,9 +1,9 @@
 import { testSolver, } from "./models/tester.js";
 export function createTest(tests, onStatusChange) {
-    if (onStatusChange === void 0) { onStatusChange = null; }
+    if (onStatusChange === void 0) { onStatusChange = []; }
     function evaluate(str) {
         return new Promise(function (R0, R_0) {
-            R0(0);
+            R0(1);
         });
     }
     var r = new testSolver(tests, evaluate, onStatusChange);

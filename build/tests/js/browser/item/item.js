@@ -4,10 +4,10 @@ export default function ItemView(_a) {
     var source = _a.source, _b = _a.creator, creator = _b === void 0 ? undefined : _b, _c = _a.onStatusChange, onStatusChange = _c === void 0 ? undefined : _c;
     var _d = useState(false), hasFalse = _d[0], setHasFalse = _d[1];
     var _e = useState("not_started"), status = _e[0], setStatus = _e[1];
-    function onSolverChange(id, resp, item) {
-        onStatusChange && onStatusChange(id, resp, item);
+    function onSolverChange(targetId, targetStatus, partial, ref) {
+        onStatusChange && onStatusChange(targetId, targetStatus, partial, ref);
         setStatus(test.status);
-        setHasFalse(hasFalse || resp === false);
+        setHasFalse(hasFalse || targetStatus === false);
     }
     function _creator() {
         if (typeof source !== "object") {
@@ -19,7 +19,7 @@ export default function ItemView(_a) {
             }
             return creator(source, onSolverChange);
         }
-        source.setOnStatusChange(onSolverChange);
+        source.addOnStatusChange(onSolverChange);
         return source;
     }
     var test = useState(_creator())[0];

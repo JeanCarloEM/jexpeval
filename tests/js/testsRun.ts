@@ -7,11 +7,11 @@ import {
 
 export function createTest(
   tests: testSolver[] | TTestSource,
-  onStatusChange: null | TonTestStatusChange = null,
+  onStatusChange: TonTestStatusChange | TonTestStatusChange[] = [],
 ): Promise<testSolver> {
   function evaluate(str: string): Promise<T.TPrintableEvalResult> {
     return new Promise<T.TPrintableEvalResult>((R0, R_0) => {
-      R0(0);
+      R0(1);
     });
   }
 

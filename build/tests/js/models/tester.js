@@ -33,7 +33,7 @@ export var EIdentifyTTestGroupSource;
 var testSolver = (function (_super) {
     __extends(testSolver, _super);
     function testSolver(tests, solver, onStatusChange) {
-        if (onStatusChange === void 0) { onStatusChange = null; }
+        if (onStatusChange === void 0) { onStatusChange = []; }
         var _this = _super.call(this, []) || this;
         _this.solver = solver;
         _this.onStatusChange = onStatusChange;
@@ -131,7 +131,9 @@ var testSolver = (function (_super) {
         }
         setTitle(tests[0]);
         tests[1].map(function (item) {
-            _this.push(new testSolver(item, _this.solver, _this.onMyFinishChild));
+            _this.push(new testSolver(item, _this.solver, function (targetId, targetStatus, partial, ref) {
+                _this.updateParcialStatus(targetId, targetStatus, partial);
+            }));
         });
         return terminate();
     };
@@ -212,46 +214,79 @@ var testSolver = (function (_super) {
             return this._status;
         },
         set: function (v) {
-            this._status = v;
-            this.triggerStatusChange(this);
+            if (this._status !== v) {
+                this._status = v;
+                console.log("'".concat(this.title, "' finished."));
+                this.triggerStatusChange(this, this.isGroup() && this._indexTest < this.length);
+            }
         },
         enumerable: false,
         configurable: true
     });
-    testSolver.prototype.updateStatus = function (state) {
-        this._approved = this._approved && state === true;
-    };
-    testSolver.prototype.finished = function (state) {
-        if (state === true || state === false) {
-            this.updateStatus(state);
+    testSolver.prototype.updateParcialStatus = function (targetId, targetStatus, partial) {
+        var _this = this;
+        if (partial === void 0) { partial = false; }
+        if (targetStatus === false || targetStatus === true) {
+            if (!this.isGroup()) {
+                this.status = targetStatus;
+                return;
+            }
+            this._approved = this._approved && targetStatus;
+            if (partial) {
+                return this.triggerStatusChange(targetId, targetStatus, true);
+            }
+            if (this._indexTest < this.length) {
+                console.warn("'".concat(this.title, "' rodou o pr\u00F3ximo."));
+                this.triggerStatusChange(targetId, targetStatus, true);
+                setTimeout(function () {
+                    var _a;
+                    (_a = _this.at(_this._indexTest++)) === null || _a === void 0 ? void 0 : _a.run();
+                }, 1000);
+                return;
+            }
+            this.status = this._approved;
         }
-        this.status = this._approved;
-        this._indexTest = 0;
     };
-    testSolver.prototype.setOnStatusChange = function (newOnStatusChange) {
+    testSolver.prototype.addOnStatusChange = function (newOnStatusChange) {
         if (typeof newOnStatusChange !== "function") {
             throw "[testSolver] newOnStatusChange is not a function.";
         }
-        this.onStatusChange = newOnStatusChange;
+        if (typeof this.onStatusChange === "function") {
+            this.onStatusChange = [this.onStatusChange];
+        }
+        this.onStatusChange.push(newOnStatusChange);
     };
-    testSolver.prototype.triggerStatusChange = function (item) {
-        typeof this.onStatusChange === "function" &&
-            this.onStatusChange(item.id, item.status, item);
-    };
-    testSolver.prototype.onMyFinishChild = function (id, resp, item) {
-        var _a;
-        if (id.trim().length === 0) {
-            throw "[testSolver] onMyFinishChild receive an empty 'id' of child.";
-        }
-        if (resp !== true && resp !== false) {
-            throw "[testSolver] onMyFinishChild receive an uncompleted 'resp'.";
-        }
-        item && this.triggerStatusChange(item);
-        this.updateStatus(resp);
-        if (this._indexTest < this.length) {
-            return (_a = this.at(this._indexTest++)) === null || _a === void 0 ? void 0 : _a.run();
-        }
-        this.finished();
+    testSolver.prototype.triggerStatusChange = function (target, statusOrPartial, partial) {
+        var _this = this;
+        if (partial === void 0) { partial = false; }
+        this.onStatusChange =
+            typeof this.onStatusChange === "function"
+                ? [this.onStatusChange]
+                : this.onStatusChange;
+        this.onStatusChange.map(function (f) {
+            if (typeof target === "object") {
+                if (typeof statusOrPartial !== "boolean") {
+                    throw [
+                        "[testSolver] triggerStatusChange: statusOrPartial parameter is invalid.",
+                        statusOrPartial,
+                    ];
+                }
+                return f(target.id, target.status, statusOrPartial, _this);
+            }
+            if (typeof statusOrPartial === "undefined") {
+                throw [
+                    "[testSolver] statusOrPartial: resp parameter is invalid.",
+                    statusOrPartial,
+                ];
+            }
+            if (typeof target === "string") {
+                return f(target, statusOrPartial, partial, _this);
+            }
+            throw [
+                "[testSolver] triggerStatusChange: target parameter is invalid.",
+                target,
+            ];
+        });
     };
     testSolver.prototype.toString = function () {
         return JSON.stringify(this.at(0));
@@ -260,7 +295,7 @@ var testSolver = (function (_super) {
         var _this = this;
         var _a;
         if (this.status === false || this.status === true) {
-            this.finished(this.status);
+            return this.updateParcialStatus(this.id, this.status, false);
         }
         this.status = "running";
         if (this.isGroup()) {
@@ -273,7 +308,7 @@ var testSolver = (function (_super) {
             throw "[testSolver] values ​​defined simultaneously as individual and group in '.run()'.";
         }
         this.solver(this.test.expression).then(function (r) {
-            _this.finished(String(_this.test.expectedResult) === String(r));
+            _this.updateParcialStatus(_this.id, String(_this.test.expectedResult) === String(r), false);
         });
     };
     testSolver.__inputs = { ids: [], tests: [] };

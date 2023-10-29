@@ -27,7 +27,7 @@ export interface ItestSolver {
     isGroup: () => boolean;
     isTest: () => boolean;
 }
-export type TonTestStatusChange = (id: string, resp: TTestResult, item?: ItestSolver) => void;
+export type TonTestStatusChange = (targetId: string, targetStatus: TTestResult, partial: boolean, ref?: ItestSolver) => void;
 export type TSolverCall = (str: string) => Promise<TPrintableEvalResult>;
 export type TTestMode = "group" | TOneExplicitTest;
 export type TCreatedTests = {
@@ -45,7 +45,7 @@ export declare class testSolver extends TIterator<testSolver> implements ItestSo
     private _indexTest;
     private _id;
     private _title;
-    constructor(tests: testSolver[] | TTestSource, solver: TSolverCall, onStatusChange?: null | TonTestStatusChange);
+    constructor(tests: testSolver[] | TTestSource, solver: TSolverCall, onStatusChange?: TonTestStatusChange | TonTestStatusChange[]);
     private __startMe;
     static getIfIdExists(id: string): false | testSolver;
     static isTOneTestItemSource(x: any): boolean;
@@ -59,11 +59,9 @@ export declare class testSolver extends TIterator<testSolver> implements ItestSo
     get test(): TOneExplicitTest;
     get status(): TTestResult;
     private set status(value);
-    protected updateStatus(state: TTestResult): void;
-    protected finished(state?: TTestResult): void;
-    setOnStatusChange(newOnStatusChange: TonTestStatusChange): void;
+    protected updateParcialStatus(targetId: string, targetStatus: TTestResult, partial?: boolean): void;
+    addOnStatusChange(newOnStatusChange: TonTestStatusChange): void;
     private triggerStatusChange;
-    onMyFinishChild(id: string, resp: TTestResult, item?: ItestSolver): void;
     toString(): string;
     run(): void;
 }

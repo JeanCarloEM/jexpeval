@@ -4,16 +4,16 @@ import { createTest, load } from "../testsRun.js";
 var main = (function () {
     function main() {
     }
-    main.onStatusItemChange = function (id, resp, item) {
-        switch (resp) {
+    main.onStatusItemChange = function (targetId, targetStatus, partial, ref) {
+        switch (targetStatus) {
             case "running":
-                console.log("Running '".concat(item && item.title, "'."));
+                console.log("Running '".concat(ref && ref.title, "'."));
                 break;
             case true:
-                console.log("OK '".concat(item && item.title, "'."));
+                console.log("OK '".concat(ref && ref.title, "'."));
                 break;
             case false:
-                console.error("FAIL '".concat(item && item.title, "'."));
+                console.error("FAIL '".concat(ref && ref.title, "'."));
                 break;
             default:
                 break;
