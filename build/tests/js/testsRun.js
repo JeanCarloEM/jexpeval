@@ -7,9 +7,7 @@ export function createTest(tests, onStatusChange, delayBetween) {
             R0(1);
         });
     }
-    console.error([delayBetween]);
     var r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
-    console.warn([delayBetween]);
     return new Promise(function (R0, R_0) {
         function __whilteNoId() {
             return r.id.trim().length === 0 ? setTimeout(__whilteNoId, 1) : R0(r);
@@ -20,19 +18,31 @@ export function createTest(tests, onStatusChange, delayBetween) {
         __whilteNoId();
     });
 }
-export function load() {
+export function load(onStatusChange, delayBetween) {
+    if (onStatusChange === void 0) { onStatusChange = []; }
+    if (delayBetween === void 0) { delayBetween = 0; }
     return new Promise(function (R0, R_0) {
         console.log("Loading tests.");
         window
             .fetch("tests.json")
-            .then(function (r) { return r.json(); })
-            .then(function (r) {
-            console.log("Tests is loaded.");
-            R0(r);
-        })
             .catch(function (r) {
-            console.log("Fail load tests.");
-        });
+            throw "Fail to download tests;json.";
+        })
+            .then(function (r) { return r.json(); })
+            .catch(function (r) {
+            throw "Fail load tests as json.";
+        })
+            .then(function (r) {
+            return new Promise(function (R1) {
+                console.log("Tests is loaded.");
+                R1(r);
+            });
+        })
+            .then(function (r1) { return createTest(r1, onStatusChange, delayBetween); })
+            .catch(function (r) {
+            throw "Fail to create test from json.";
+        })
+            .then(function (r) { return R0(r); });
     });
 }
 //# sourceMappingURL=testsRun.js.map

@@ -16,9 +16,7 @@ export function createTest(
     });
   }
 
-  console.error([delayBetween]);
   const r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
-  console.warn([delayBetween]);
 
   return new Promise<testSolver>((R0, R_0) => {
     function __whilteNoId(): any {
@@ -33,19 +31,32 @@ export function createTest(
   });
 }
 
-export function load(): Promise<object> {
+export function load(
+  onStatusChange: TonTestStatusChange | TonTestStatusChange[] = [],
+  delayBetween: number = 0,
+): Promise<object> {
   return new Promise<Object>((R0, R_0) => {
     console.log("Loading tests.");
 
     window
       .fetch("tests.json")
-      .then((r: any) => r.json())
-      .then((r: object) => {
-        console.log("Tests is loaded.");
-        R0(r);
-      })
       .catch((r: any) => {
-        console.log("Fail load tests.");
-      });
+        throw "Fail to download tests;json.";
+      })
+      .then((r: any) => r.json())
+      .catch((r: any) => {
+        throw "Fail load tests as json.";
+      })
+      .then((r: object) => {
+        return new Promise<Object>((R1) => {
+          console.log("Tests is loaded.");
+          R1(r);
+        });
+      })
+      .then((r1) => createTest(<TTestSource>r1, onStatusChange, delayBetween))
+      .catch((r: any) => {
+        throw "Fail to create test from json.";
+      })
+      .then((r) => R0(r));
   });
 }

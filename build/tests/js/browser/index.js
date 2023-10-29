@@ -1,6 +1,6 @@
 import { h, render } from "preact";
 import ItemView from "./item/item.js";
-import { createTest, load } from "../testsRun.js";
+import { load } from "../testsRun.js";
 var main = (function () {
     function main() {
     }
@@ -24,14 +24,14 @@ var main = (function () {
     main.run = function () {
         var _this = this;
         load()
-            .then(function (r1) { return createTest(r1, [], 1000); })
             .then(function (r) {
+            var SRC = r;
             render(h(ItemView, {
-                source: r,
+                source: SRC,
                 onStatusChange: _this.onStatusItemChange,
             }), document.querySelector("body > div.root"));
             setTimeout(function () {
-                r.run();
+                SRC.run();
             }, 10);
         });
     };

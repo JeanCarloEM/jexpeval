@@ -49,18 +49,18 @@ export abstract class main {
    */
   public static run(): void {
     load()
-      .then((r1) => createTest(<TTestSource>r1, [], 1000))
       .then((r) => {
+        const SRC: testSolver = <testSolver>r;
         render(
           h(ItemView, {
-            source: r,
+            source: SRC,
             onStatusChange: this.onStatusItemChange,
           }),
           <Element>document.querySelector("body > div.root"),
         );
 
         setTimeout(() => {
-          r.run();
+          SRC.run();
         }, 10);
       });
   }
