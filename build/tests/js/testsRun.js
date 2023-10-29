@@ -1,12 +1,15 @@
 import { testSolver, } from "./models/tester.js";
-export function createTest(tests, onStatusChange) {
+export function createTest(tests, onStatusChange, delayBetween) {
     if (onStatusChange === void 0) { onStatusChange = []; }
-    function evaluate(str) {
+    if (delayBetween === void 0) { delayBetween = 0; }
+    function evaluator(str) {
         return new Promise(function (R0, R_0) {
             R0(1);
         });
     }
-    var r = new testSolver(tests, evaluate, onStatusChange);
+    console.error([delayBetween]);
+    var r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
+    console.warn([delayBetween]);
     return new Promise(function (R0, R_0) {
         function __whilteNoId() {
             return r.id.trim().length === 0 ? setTimeout(__whilteNoId, 1) : R0(r);

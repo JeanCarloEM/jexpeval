@@ -32,11 +32,13 @@ export var EIdentifyTTestGroupSource;
 })(EIdentifyTTestGroupSource || (EIdentifyTTestGroupSource = {}));
 var testSolver = (function (_super) {
     __extends(testSolver, _super);
-    function testSolver(tests, solver, onStatusChange) {
+    function testSolver(tests, solver, onStatusChange, delayBetween) {
         if (onStatusChange === void 0) { onStatusChange = []; }
+        if (delayBetween === void 0) { delayBetween = 0; }
         var _this = _super.call(this, []) || this;
         _this.solver = solver;
         _this.onStatusChange = onStatusChange;
+        _this.delayBetween = delayBetween;
         _this._test = undefined;
         _this.group = undefined;
         _this._status = "not_started";
@@ -133,7 +135,7 @@ var testSolver = (function (_super) {
         tests[1].map(function (item) {
             _this.push(new testSolver(item, _this.solver, function (targetId, targetStatus, partial, ref) {
                 _this.updateParcialStatus(targetId, targetStatus, partial);
-            }));
+            }, _this.delayBetween));
         });
         return terminate();
     };
@@ -238,10 +240,15 @@ var testSolver = (function (_super) {
             if (this._indexTest < this.length) {
                 console.warn("'".concat(this.title, "' rodou o pr\u00F3ximo."));
                 this.triggerStatusChange(targetId, targetStatus, true);
-                setTimeout(function () {
+                (function (run) {
+                    if (_this.delayBetween > 0) {
+                        return setTimeout(run, _this.delayBetween);
+                    }
+                    run();
+                })(function () {
                     var _a;
                     (_a = _this.at(_this._indexTest++)) === null || _a === void 0 ? void 0 : _a.run();
-                }, 1000);
+                });
                 return;
             }
             this.status = this._approved;

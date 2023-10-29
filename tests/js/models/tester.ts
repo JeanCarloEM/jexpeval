@@ -71,6 +71,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
     tests: testSolver[] | TTestSource,
     private readonly solver: TSolverCall,
     private onStatusChange: TonTestStatusChange | TonTestStatusChange[] = [],
+    private delayBetween: number = 0,
   ) {
     super(<testSolver[]>[]);
     this.__startMe(tests);
@@ -227,6 +228,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
           ) => {
             this.updateParcialStatus(targetId, targetStatus, partial);
           },
+          this.delayBetween,
         ),
       );
     });
@@ -423,9 +425,15 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
       if (this._indexTest < this.length) {
         console.warn(`'${this.title}' rodou o próximo.`);
         this.triggerStatusChange(targetId, targetStatus, true);
-        setTimeout(() => {
+        ((run) => {
+          if (this.delayBetween > 0) {
+            return setTimeout(run, this.delayBetween);
+          }
+
+          run();
+        })(() => {
           this.at(this._indexTest++)?.run();
-        }, 1000);
+        });
         return;
       }
 

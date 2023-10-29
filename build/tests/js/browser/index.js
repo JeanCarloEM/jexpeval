@@ -22,7 +22,7 @@ var main = (function () {
     main.run = function () {
         var _this = this;
         load()
-            .then(function (r1) { return createTest(r1); })
+            .then(function (r1) { return createTest(r1, [], 1000); })
             .then(function (r) {
             render(h(ItemView, {
                 source: r,

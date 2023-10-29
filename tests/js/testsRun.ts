@@ -8,14 +8,17 @@ import {
 export function createTest(
   tests: testSolver[] | TTestSource,
   onStatusChange: TonTestStatusChange | TonTestStatusChange[] = [],
+  delayBetween: number = 0,
 ): Promise<testSolver> {
-  function evaluate(str: string): Promise<T.TPrintableEvalResult> {
+  function evaluator(str: string): Promise<T.TPrintableEvalResult> {
     return new Promise<T.TPrintableEvalResult>((R0, R_0) => {
       R0(1);
     });
   }
 
-  const r = new testSolver(tests, evaluate, onStatusChange);
+  console.error([delayBetween]);
+  const r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
+  console.warn([delayBetween]);
 
   return new Promise<testSolver>((R0, R_0) => {
     function __whilteNoId(): any {

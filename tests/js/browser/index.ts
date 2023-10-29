@@ -47,7 +47,7 @@ export abstract class main {
    */
   public static run(): void {
     load()
-      .then((r1) => createTest(<TTestSource>r1))
+      .then((r1) => createTest(<TTestSource>r1, [], 1000))
       .then((r) => {
         render(
           h(ItemView, {

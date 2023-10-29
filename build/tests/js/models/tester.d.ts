@@ -37,6 +37,7 @@ export type TCreatedTests = {
 export declare class testSolver extends TIterator<testSolver> implements ItestSolver {
     private readonly solver;
     private onStatusChange;
+    private delayBetween;
     private static __inputs;
     private _test;
     private group;
@@ -45,7 +46,7 @@ export declare class testSolver extends TIterator<testSolver> implements ItestSo
     private _indexTest;
     private _id;
     private _title;
-    constructor(tests: testSolver[] | TTestSource, solver: TSolverCall, onStatusChange?: TonTestStatusChange | TonTestStatusChange[]);
+    constructor(tests: testSolver[] | TTestSource, solver: TSolverCall, onStatusChange?: TonTestStatusChange | TonTestStatusChange[], delayBetween?: number);
     private __startMe;
     static getIfIdExists(id: string): false | testSolver;
     static isTOneTestItemSource(x: any): boolean;
