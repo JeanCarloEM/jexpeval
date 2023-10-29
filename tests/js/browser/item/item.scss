@@ -66,7 +66,7 @@
     }
   }
 
-  &.ok {
+  &[data-ok="2"] {
     > label {
       &::after {
         content: "\f058";
@@ -75,7 +75,7 @@
     }
   }
 
-  &.fail {
+  &[data-ok="3"] {
     > label {
       &:active {
         content: "\f06a";
@@ -84,7 +84,7 @@
     }
   }
 
-  &.running {
+  &[data-ok="1"] {
     > label {
       &::after {
         content: "f7b9";
