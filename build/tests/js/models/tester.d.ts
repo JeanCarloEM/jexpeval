@@ -30,9 +30,14 @@ export interface ItestSolver {
 export type TonTestStatusChange = (id: string, resp: TTestResult, item?: ItestSolver) => void;
 export type TSolverCall = (str: string) => Promise<TPrintableEvalResult>;
 export type TTestMode = "group" | TOneExplicitTest;
+export type TCreatedTests = {
+    ids: string[];
+    tests: testSolver[];
+};
 export declare class testSolver extends TIterator<testSolver> implements ItestSolver {
     private readonly solver;
-    private readonly onStatusChange;
+    private onStatusChange;
+    private static __inputs;
     private _test;
     private group;
     private _status;
@@ -42,6 +47,7 @@ export declare class testSolver extends TIterator<testSolver> implements ItestSo
     private _title;
     constructor(tests: testSolver[] | TTestSource, solver: TSolverCall, onStatusChange?: null | TonTestStatusChange);
     private __startMe;
+    static getIfIdExists(id: string): false | testSolver;
     static isTOneTestItemSource(x: any): boolean;
     static itsSuperficialGroupCompatibility(x: any): boolean;
     static identifyTTestGroupSource(input: any): EIdentifyTTestGroupSource;
@@ -55,6 +61,7 @@ export declare class testSolver extends TIterator<testSolver> implements ItestSo
     private set status(value);
     protected updateStatus(state: TTestResult): void;
     protected finished(state?: TTestResult): void;
+    setOnStatusChange(newOnStatusChange: TonTestStatusChange): void;
     private triggerStatusChange;
     onMyFinishChild(id: string, resp: TTestResult, item?: ItestSolver): void;
     toString(): string;

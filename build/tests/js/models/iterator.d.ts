@@ -1,6 +1,6 @@
 export declare abstract class TIterator<T> {
-    private _items;
-    constructor(_items: T[]);
+    private __items;
+    constructor(__items: T[]);
     incorporate(from: T[]): TIterator<T>;
     recreateFrom(from: T[]): TIterator<T>;
     get length(): number;

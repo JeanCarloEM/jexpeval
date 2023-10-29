@@ -7,14 +7,14 @@ export type creatorTest = (
 ) => TT.testSolver;
 
 export interface IItemViewProps {
-  creator: creatorTest;
+  creator?: creatorTest;
   source: TT.TTestSource | TT.testSolver;
   onStatusChange?: TT.TonTestStatusChange;
 }
 
 export default function ItemView({
-  creator,
   source,
+  creator = undefined,
   onStatusChange = undefined,
 }: IItemViewProps) {
   const [status, setStatus] = useState<TT.TTestResult>("not_started");
@@ -29,16 +29,27 @@ export default function ItemView({
     onStatusChange && onStatusChange(id, resp, item);
   }
 
-  if (!creator) {
-    console.log(creator);
-    throw "undefined creator in ItemView";
+  function _creator(): TT.testSolver {
+    if (typeof source !== "object") {
+      throw "[ItemView] source isn't object.";
+    }
+
+    if (Array.isArray(source)) {
+      if (!creator) {
+        throw "[ItemView] creator is invalid for source array.";
+      }
+
+      return creator(source, onSolverChange);
+    }
+
+    source.setOnStatusChange(onSolverChange);
+
+    return source;
   }
 
-  const [test] = useState<TT.testSolver>(
-    Array.isArray(source) ? creator(source, onSolverChange) : source,
-  );
-
+  const [test] = useState<TT.testSolver>(_creator());
   const isGroup: boolean = test.isGroup();
+  const hasId: boolean = test.id.trim().length > 0;
 
   var stt: string = "";
 
@@ -65,20 +76,24 @@ export default function ItemView({
     <div
       data-ok={stt}
       data-group={isGroup && "1"}
-      className={`testItemView ${isGroup && "1"}`}
+      className={`testItemView ${isGroup ? "testGroupView" : ""}`}
     >
-      <label for={test.id}>
-        <span>{test.title}</span>
-      </label>
-      {isGroup && <input type="checkbox" id={test.id}></input>}
+      {isGroup && hasId && <input type="checkbox" id={test.id}></input>}
+      {hasId && (
+        <label for={test.id}>
+          <span>{test.title}</span>
+        </label>
+      )}
       {isGroup && (
-        <div>
+        <div class="subgroup">
           {test.map((item) => {
-            <ItemView
-              creator={creator}
-              source={item}
-              onStatusChange={onStatusChange}
-            ></ItemView>;
+            return (
+              <ItemView
+                creator={creator}
+                source={item}
+                onStatusChange={onStatusChange}
+              ></ItemView>
+            );
           })}
         </div>
       )}

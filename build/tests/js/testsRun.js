@@ -6,7 +6,16 @@ export function createTest(tests, onStatusChange) {
             R0(0);
         });
     }
-    return new testSolver(tests, evaluate, onStatusChange);
+    var r = new testSolver(tests, evaluate, onStatusChange);
+    return new Promise(function (R0, R_0) {
+        function __whilteNoId() {
+            return r.id.trim().length === 0 ? setTimeout(__whilteNoId, 1) : R0(r);
+        }
+        if (typeof r !== "object") {
+            throw ["[index.ts (main)] is not object.", r];
+        }
+        __whilteNoId();
+    });
 }
 export function load() {
     return new Promise(function (R0, R_0) {

@@ -58,10 +58,28 @@ var testSolver = (function (_super) {
             if (_this.title.length === 0 && !_this.isGroup()) {
                 setTitle(_this.test.expression);
             }
-            _this._test = typeof _this._test === undefined ? "group" : _this._test;
+            _this._test = typeof _this._test === "undefined" ? "group" : _this._test;
+            var uuid = function () {
+                return "i10000000100040008000100000000000".replace(/[018]/g, function (x) {
+                    var c = x;
+                    return (c ^
+                        (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16);
+                });
+            };
             crypto.subtle
-                .digest("SHA-256", new TextEncoder().encode(_this.title))
-                .then(function (r) { return _this._id; });
+                .digest("SHA-256", new TextEncoder().encode(_this.title.length > 0 ? _this.title : uuid()))
+                .then(function (r) {
+                _this._id =
+                    "i" +
+                        Array.from(new Uint8Array(r))
+                            .map(function (b) { return b.toString(16).padStart(2, "0"); })
+                            .join("");
+                if (testSolver.__inputs.ids.indexOf(_this.id) > 0) {
+                    console.error("[testSolver] duplicated test, '".concat(_this.title, "'"));
+                }
+                testSolver.__inputs.tests[testSolver.__inputs.ids.push(_this.id)] =
+                    _this;
+            });
         };
         var T = testSolver.identifyTTestGroupSource(tests);
         if (T === EIdentifyTTestGroupSource.itsNotAGroup) {
@@ -97,11 +115,17 @@ var testSolver = (function (_super) {
             return this.__startMe(tests[1][0]);
         }
         setTitle(tests[0]);
-        var _self = [];
         tests[1].map(function (item) {
-            _self.push(new testSolver(item, _this.solver, _this.onMyFinishChild));
+            _this.push(new testSolver(item, _this.solver, _this.onMyFinishChild));
         });
         return terminate();
+    };
+    testSolver.getIfIdExists = function (id) {
+        var pos = testSolver.__inputs.ids.indexOf(id);
+        if (pos < 0) {
+            return false;
+        }
+        return testSolver.__inputs.tests[pos];
     };
     testSolver.isTOneTestItemSource = function (x) {
         return (typeof x === "object" &&
@@ -132,7 +156,7 @@ var testSolver = (function (_super) {
         return EIdentifyTTestGroupSource.isTNestedTestGroupSource;
     };
     testSolver.prototype.throwIfNotStartedTest = function () {
-        if (typeof this._test === undefined) {
+        if (typeof this._test === "undefined") {
             throw "[testSolver] this getter (.test) was called before the definition in the class constructor.";
         }
         return false;
@@ -189,6 +213,12 @@ var testSolver = (function (_super) {
         this.status = this._approved;
         this._indexTest = 0;
     };
+    testSolver.prototype.setOnStatusChange = function (newOnStatusChange) {
+        if (typeof newOnStatusChange !== "function") {
+            throw "[testSolver] newOnStatusChange is not a function.";
+        }
+        this.onStatusChange = newOnStatusChange;
+    };
     testSolver.prototype.triggerStatusChange = function (item) {
         typeof this.onStatusChange === "function" &&
             this.onStatusChange(item.id, item.status, item);
@@ -231,6 +261,7 @@ var testSolver = (function (_super) {
             _this.finished(String(_this.test.expectedResult) === String(r));
         });
     };
+    testSolver.__inputs = { ids: [], tests: [] };
     return testSolver;
 }(TIterator));
 export { testSolver };

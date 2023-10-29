@@ -1,8 +1,14 @@
 import { h, Component, render } from "preact";
 import htm from "htm";
-import { ItestSolver, TTestResult, TTestSource } from "../models/tester.js";
+import {
+  ItestSolver,
+  testSolver,
+  TTestResult,
+  TTestSource,
+} from "../models/tester.js";
 import ItemView from "./item/item";
 import { createTest, load } from "../testsRun.js";
+import { TPrintableEvalResult } from "../../../src/definitions.js";
 
 export abstract class main {
   /**
@@ -34,15 +40,16 @@ export abstract class main {
    *
    */
   public static run(): void {
-    load().then((r) => {
-      render(
-        h(ItemView, {
-          creator: createTest,
-          source: <TTestSource>r,
-          onStatusChange: this.onStatusItemChange,
-        }),
-        <Element>document.querySelector("body > div.root"),
-      );
-    });
+    load()
+      .then((r1) => createTest(<TTestSource>r1))
+      .then((r) => {
+        render(
+          h(ItemView, {
+            source: r,
+            onStatusChange: this.onStatusItemChange,
+          }),
+          <Element>document.querySelector("body > div.root"),
+        );
+      });
   }
 }

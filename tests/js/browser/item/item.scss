@@ -5,8 +5,9 @@
     padding: 0.2rem 1rem;
     padding-left: 2.5rem;
     border-radius: 0.3rem;
-    margin: 0.3rem;
+    margin: 0.3rem 0rem;
     background: #efefef;
+    transition: all 0.05s;
 
     &,
     > * {
@@ -37,7 +38,7 @@
     &::after {
       content: "\f141";
       right: 1.4rem;
-      top: 1.05rem;
+      margin-top: -1.5rem;
       font-weight: bold;
       font-size: 1rem;
       color: #999;
@@ -62,12 +63,6 @@
           color: #fff;
         }
       }
-    }
-
-    & + div.subgroup {
-      border-left: 1px solid #2b92db;
-      margin-left: 1rem;
-      display: none;
     }
   }
 
@@ -99,8 +94,23 @@
     }
   }
 
+  > div.subgroup {
+    border-left: 1px solid #bbb;
+    margin: 0.3rem 0;
+    margin-left: 0.1rem;
+    padding-left: 1.1rem;
+    display: none;
+  }
+
+  > *:first-child {
+    &.subgroup {
+      display: block;
+    }
+  }
+
   > input[type="checkbox"] {
     position: fixed;
+    left: -100vw;
 
     & + label {
       cursor: pointer;

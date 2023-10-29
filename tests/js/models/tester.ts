@@ -47,7 +47,13 @@ export type TSolverCall = (str: string) => Promise<TPrintableEvalResult>;
 
 export type TTestMode = "group" | TOneExplicitTest;
 
+export type TCreatedTests = {
+  ids: string[];
+  tests: testSolver[];
+};
+
 export class testSolver extends TIterator<testSolver> implements ItestSolver {
+  private static __inputs: TCreatedTests = { ids: [], tests: [] };
   private _test: undefined | TTestMode = undefined;
   private group: undefined | TNestedTestGroupSource = undefined;
   private _status: TTestResult = "not_started";
@@ -59,7 +65,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
   constructor(
     tests: testSolver[] | TTestSource,
     private readonly solver: TSolverCall,
-    private readonly onStatusChange: null | TonTestStatusChange = null,
+    private onStatusChange: null | TonTestStatusChange = null,
   ) {
     super(<testSolver[]>[]);
     this.__startMe(tests);
@@ -83,12 +89,38 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
         setTitle(this.test.expression);
       }
 
-      this._test = typeof this._test === undefined ? "group" : this._test;
+      this._test = typeof this._test === "undefined" ? "group" : this._test;
+
+      const uuid = () => {
+        return "i10000000100040008000100000000000".replace(/[018]/g, (x) => {
+          const c: any = <any>x;
+          return (
+            c ^
+            (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+          ).toString(16);
+        });
+      };
 
       /* generate id */
       crypto.subtle
-        .digest("SHA-256", new TextEncoder().encode(this.title))
-        .then((r) => this._id);
+        .digest(
+          "SHA-256",
+          new TextEncoder().encode(this.title.length > 0 ? this.title : uuid()),
+        )
+        .then((r) => {
+          this._id =
+            "i" +
+            Array.from(new Uint8Array(r))
+              .map((b) => b.toString(16).padStart(2, "0"))
+              .join("");
+
+          if (testSolver.__inputs.ids.indexOf(this.id) > 0) {
+            console.error(`[testSolver] duplicated test, '${this.title}'`);
+          }
+
+          testSolver.__inputs.tests[testSolver.__inputs.ids.push(this.id)] =
+            this;
+        });
     };
 
     const T: EIdentifyTTestGroupSource =
@@ -154,13 +186,27 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
      * 3/3: B. It's probably a group with many elements
      */
     setTitle((<TNestedTestGroupSource>tests)[0]);
-    var _self: testSolver[] = [];
 
     (<TNestedTestGroupSource>tests)[1].map((item) => {
-      _self.push(new testSolver(item, this.solver, this.onMyFinishChild));
+      this.push(new testSolver(item, this.solver, this.onMyFinishChild));
     });
 
     return terminate();
+  }
+
+  /**
+   *
+   * @param id
+   * @returns
+   */
+  public static getIfIdExists(id: string): false | testSolver {
+    const pos: number = testSolver.__inputs.ids.indexOf(id);
+
+    if (pos < 0) {
+      return false;
+    }
+
+    return testSolver.__inputs.tests[pos];
   }
 
   /**
@@ -243,7 +289,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
    * @returns
    */
   private throwIfNotStartedTest(): boolean {
-    if (typeof this._test === undefined) {
+    if (typeof this._test === "undefined") {
       throw "[testSolver] this getter (.test) was called before the definition in the class constructor.";
     }
 
@@ -323,6 +369,18 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
 
     this.status = this._approved;
     this._indexTest = 0;
+  }
+
+  /**
+   *
+   * @param newOnStatusChange
+   */
+  public setOnStatusChange(newOnStatusChange: TonTestStatusChange): void {
+    if (typeof newOnStatusChange !== "function") {
+      throw "[testSolver] newOnStatusChange is not a function.";
+    }
+
+    this.onStatusChange = newOnStatusChange;
   }
 
   /**
