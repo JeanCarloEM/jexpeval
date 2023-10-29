@@ -23,8 +23,7 @@ var main = (function () {
     };
     main.run = function () {
         var _this = this;
-        load()
-            .then(function (r) {
+        load([], 500).then(function (r) {
             var SRC = r;
             render(h(ItemView, {
                 source: SRC,

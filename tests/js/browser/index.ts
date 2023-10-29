@@ -48,20 +48,19 @@ export abstract class main {
    *
    */
   public static run(): void {
-    load()
-      .then((r) => {
-        const SRC: testSolver = <testSolver>r;
-        render(
-          h(ItemView, {
-            source: SRC,
-            onStatusChange: this.onStatusItemChange,
-          }),
-          <Element>document.querySelector("body > div.root"),
-        );
+    load([], 500).then((r) => {
+      const SRC: testSolver = <testSolver>r;
+      render(
+        h(ItemView, {
+          source: SRC,
+          onStatusChange: this.onStatusItemChange,
+        }),
+        <Element>document.querySelector("body > div.root"),
+      );
 
-        setTimeout(() => {
-          SRC.run();
-        }, 10);
-      });
+      setTimeout(() => {
+        SRC.run();
+      }, 10);
+    });
   }
 }
