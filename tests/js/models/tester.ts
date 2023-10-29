@@ -92,7 +92,7 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
       this._test = typeof this._test === "undefined" ? "group" : this._test;
 
       const uuid = () => {
-        return "i10000000100040008000100000000000".replace(/[018]/g, (x) => {
+        return "uid10000000100040008000100000000000".replace(/[018]/g, (x) => {
           const c: any = <any>x;
           return (
             c ^
@@ -101,26 +101,48 @@ export class testSolver extends TIterator<testSolver> implements ItestSolver {
         });
       };
 
-      /* generate id */
-      crypto.subtle
-        .digest(
-          "SHA-256",
-          new TextEncoder().encode(this.title.length > 0 ? this.title : uuid()),
-        )
-        .then((r) => {
-          this._id =
-            "i" +
-            Array.from(new Uint8Array(r))
-              .map((b) => b.toString(16).padStart(2, "0"))
-              .join("");
+      const generateUniqueIDforMe = (force: boolean = false) => {
+        /* generate id */
+        new Promise<any>((R0, R_0) => {
+          if (force) {
+            return R0(uuid());
+          }
+          crypto.subtle
+            .digest(
+              "SHA-256",
+              new TextEncoder().encode(
+                this.title.length > 0 ? this.title : uuid(),
+              ),
+            )
+            .then((r) => R0(r));
+        }).then((r) => {
+          const new_uid =
+            typeof r === "string"
+              ? r
+              : "i" +
+                Array.from(new Uint8Array(r))
+                  .map((b) => b.toString(16).padStart(2, "0"))
+                  .join("");
 
-          if (testSolver.__inputs.ids.indexOf(this.id) > 0) {
+          const isUnique: boolean =
+            testSolver.__inputs.ids.indexOf(new_uid) < 0;
+
+          if (!isUnique && !force && this.isGroup()) {
+            return generateUniqueIDforMe(true);
+          }
+
+          if (!isUnique) {
             console.error(`[testSolver] duplicated test, '${this.title}'`);
           }
 
-          testSolver.__inputs.tests[testSolver.__inputs.ids.push(this.id)] =
+          testSolver.__inputs.tests[testSolver.__inputs.ids.push(new_uid)] =
             this;
+
+          this._id = new_uid;
         });
+      };
+
+      generateUniqueIDforMe();
     };
 
     const T: EIdentifyTTestGroupSource =

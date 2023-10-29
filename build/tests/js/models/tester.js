@@ -60,26 +60,41 @@ var testSolver = (function (_super) {
             }
             _this._test = typeof _this._test === "undefined" ? "group" : _this._test;
             var uuid = function () {
-                return "i10000000100040008000100000000000".replace(/[018]/g, function (x) {
+                return "uid10000000100040008000100000000000".replace(/[018]/g, function (x) {
                     var c = x;
                     return (c ^
                         (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16);
                 });
             };
-            crypto.subtle
-                .digest("SHA-256", new TextEncoder().encode(_this.title.length > 0 ? _this.title : uuid()))
-                .then(function (r) {
-                _this._id =
-                    "i" +
-                        Array.from(new Uint8Array(r))
-                            .map(function (b) { return b.toString(16).padStart(2, "0"); })
-                            .join("");
-                if (testSolver.__inputs.ids.indexOf(_this.id) > 0) {
-                    console.error("[testSolver] duplicated test, '".concat(_this.title, "'"));
-                }
-                testSolver.__inputs.tests[testSolver.__inputs.ids.push(_this.id)] =
-                    _this;
-            });
+            var generateUniqueIDforMe = function (force) {
+                if (force === void 0) { force = false; }
+                new Promise(function (R0, R_0) {
+                    if (force) {
+                        return R0(uuid());
+                    }
+                    crypto.subtle
+                        .digest("SHA-256", new TextEncoder().encode(_this.title.length > 0 ? _this.title : uuid()))
+                        .then(function (r) { return R0(r); });
+                }).then(function (r) {
+                    var new_uid = typeof r === "string"
+                        ? r
+                        : "i" +
+                            Array.from(new Uint8Array(r))
+                                .map(function (b) { return b.toString(16).padStart(2, "0"); })
+                                .join("");
+                    var isUnique = testSolver.__inputs.ids.indexOf(new_uid) < 0;
+                    if (!isUnique && !force && _this.isGroup()) {
+                        return generateUniqueIDforMe(true);
+                    }
+                    if (!isUnique) {
+                        console.error("[testSolver] duplicated test, '".concat(_this.title, "'"));
+                    }
+                    testSolver.__inputs.tests[testSolver.__inputs.ids.push(new_uid)] =
+                        _this;
+                    _this._id = new_uid;
+                });
+            };
+            generateUniqueIDforMe();
         };
         var T = testSolver.identifyTTestGroupSource(tests);
         if (T === EIdentifyTTestGroupSource.itsNotAGroup) {
