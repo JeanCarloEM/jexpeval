@@ -28,15 +28,15 @@ new jexpeval(anyParserCaller, callerSolver, valuesSolver)
 
 ## Features
 
-- Pluggable variables/identifiers solver identifiers
-- Pluggable functions caller Solver
-- Solver common string and math/algebraic functions callers.
-- Mathematical operations solver
-- Logical expression solver
-- Accepts the logical operator `AND` or `&&`, case insensitive
-- Accepts the logical operator `OR` or `||`, case insensitive
-- Accepts the logical operator `NOT` or`!`, case insensitive
-- Accepts the exponentiation operator `^` or `**`"
+- Pluggable variables/identifiers solver;
+- Pluggable functions caller Solver;
+- Solver common string and math/algebraic functions callers;
+- Mathematical operations solver;
+- Logical expression solver;
+- Accepts the logical operator `AND` or `&&`, case insensitive;
+- Accepts the logical operator `OR` or `||`, case insensitive;
+- Accepts the logical operator `NOT` or`!`, case insensitive;
+- Accepts the exponentiation operator `^` or `**`";
 
 ## Dependencies
 
