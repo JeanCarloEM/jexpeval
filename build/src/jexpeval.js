@@ -14,13 +14,18 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import { baseProcessor } from "./baseProcessor.js";
+import * as WK from "./worker.js";
 var jexpeval = (function (_super) {
     __extends(jexpeval, _super);
     function jexpeval() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    jexpeval.prototype.eval = function (input) {
+    jexpeval.convertToPrintable = function (input) {
+        return 1;
+    };
+    jexpeval.prototype.eval = function (input, printable) {
         var _this = this;
+        if (printable === void 0) { printable = false; }
         if (typeof input !== "string") {
             throw "Eval input in jexpeval isnot string";
         }
@@ -32,9 +37,36 @@ var jexpeval = (function (_super) {
                 }
                 (new global[tp](_this._parser, _this._caller, _this._values))
                     .eval(r)
-                    .then(function (r1) { return R0(r1); })
+                    .then(function (r1) { return R0(printable ? jexpeval.convertToPrintable(r1) : r1); })
                     .catch(function (r2) { return R_0(r2); });
             });
+        });
+    };
+    jexpeval.run = function (str, printable, parser, caller, values) {
+        if (printable === void 0) { printable = false; }
+        if (caller === void 0) { caller = baseProcessor.genericCallerSolver; }
+        if (values === void 0) { values = baseProcessor.genericValuesSolver; }
+        return new jexpeval(parser, caller, values).eval(str, printable);
+    };
+    jexpeval.runAsWorker = function (str, printable, parser, caller, values) {
+        if (printable === void 0) { printable = false; }
+        if (caller === void 0) { caller = baseProcessor.genericCallerSolver; }
+        if (values === void 0) { values = baseProcessor.genericValuesSolver; }
+        return WK.createWorker({
+            parser: function () { },
+            caller: function () { },
+            values: function () { },
+        }, function (getFromBrowser) {
+            new jexpeval(function (input) {
+                return (getFromBrowser("parser", []));
+            }, function (name, args) {
+                return getFromBrowser("caller", []);
+            }, function (name) {
+                return getFromBrowser("values", []);
+            })
+                .eval(str, printable)
+                .catch(function (e) { })
+                .then(function (r) { });
         });
     };
     return jexpeval;

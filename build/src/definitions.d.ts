@@ -4,7 +4,7 @@ export type TPrimitiveTypes = TPrimitivePrintableTypes | boolean | symbol | null
 export type TEvalResult = TPrimitiveTypes;
 export type TPrintableEvalResult = TPrimitivePrintableTypes;
 export type TGetCaller = (name: string, args: any[]) => Promise<TEvalResult>;
-export type TGetValue = (name: string, args: any[]) => Promise<TEvalResult>;
+export type TGetValue = (name: string) => Promise<TEvalResult>;
 export type TExpParser = (input: string) => Promise<unknowParser.Expression>;
 export interface TStringKeyMap {
     [key: string]: TEvalResult;

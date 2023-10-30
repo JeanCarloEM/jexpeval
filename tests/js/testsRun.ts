@@ -1,4 +1,7 @@
+import jsep from "jsep";
 import * as T from "../../src/definitions";
+import { jexpeval } from "../../src/jexpeval.js";
+import * as unknowParser from "../../src/unknowParser.js";
 import {
   TTestSource,
   TonTestStatusChange,
@@ -11,8 +14,16 @@ export function createTest(
   delayBetween: number = 0,
 ): Promise<testSolver> {
   function evaluator(str: string): Promise<T.TPrintableEvalResult> {
-    return new Promise<T.TPrintableEvalResult>((R0, R_0) => {
+    /*
+    function _jsepEval(input: string): Promise<unknowParser.Expression> {
+      return new Promise<unknowParser.Expression>((R1, R_1) => {
+
+      });
+    }
+*/
+    return new Promise<T.TPrintableEvalResult>((R0) => {
       R0(1);
+      //jexpeval.runAsWorker(str, true, _jsepEval).then((r) => R0(r));
     });
   }
 

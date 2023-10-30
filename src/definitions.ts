@@ -15,7 +15,7 @@ export type TPrintableEvalResult = TPrimitivePrintableTypes;
 //export type TTypesProcessor = (input: ExpressionType) => Promise<TDefaultBaseType>;
 
 export type TGetCaller = (name: string, args: any[]) => Promise<TEvalResult>;
-export type TGetValue = (name: string, args: any[]) => Promise<TEvalResult>;
+export type TGetValue = (name: string) => Promise<TEvalResult>;
 export type TExpParser = (input: string) => Promise<unknowParser.Expression>;
 
 export interface TStringKeyMap {

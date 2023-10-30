@@ -3,7 +3,7 @@ export function createTest(tests, onStatusChange, delayBetween) {
     if (onStatusChange === void 0) { onStatusChange = []; }
     if (delayBetween === void 0) { delayBetween = 0; }
     function evaluator(str) {
-        return new Promise(function (R0, R_0) {
+        return new Promise(function (R0) {
             R0(1);
         });
     }
