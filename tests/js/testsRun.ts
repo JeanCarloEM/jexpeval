@@ -12,6 +12,7 @@ export function createTest(
   tests: testSolver[] | TTestSource,
   onStatusChange: TonTestStatusChange | TonTestStatusChange[] = [],
   delayBetween: number = 0,
+  inWebwork: boolean = false,
 ): Promise<testSolver> {
   function evaluator(str: string): Promise<T.TPrintableEvalResult> {
     /*
@@ -27,24 +28,25 @@ export function createTest(
     });
   }
 
-  const r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
-
   return new Promise<testSolver>((R0, R_0) => {
-    function __whilteNoId(): any {
-      return r.id.trim().length === 0 ? setTimeout(__whilteNoId, 1) : R0(r);
+    const r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
+
+    function _whileWithoutId(): any {
+      return r.id.trim().length === 0 ? setTimeout(_whileWithoutId, 1) : R0(r);
     }
 
     if (typeof r !== "object") {
       throw ["[index.ts (main)] is not object.", r];
     }
 
-    __whilteNoId();
+    _whileWithoutId();
   });
 }
 
 export function load(
   onStatusChange: TonTestStatusChange | TonTestStatusChange[] = [],
   delayBetween: number = 0,
+  inWebwork: boolean = false,
 ): Promise<object> {
   return new Promise<Object>((R0, R_0) => {
     console.log("Loading tests.");
@@ -64,7 +66,9 @@ export function load(
           R1(r);
         });
       })
-      .then((r1) => createTest(<TTestSource>r1, onStatusChange, delayBetween))
+      .then((r1) =>
+        createTest(<TTestSource>r1, onStatusChange, delayBetween, inWebwork),
+      )
       .catch((r: any) => {
         throw "Fail to create test from json.";
       })

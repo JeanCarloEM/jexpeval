@@ -1,15 +1,9 @@
 import * as D from "./definitions";
 import { baseProcessor } from "./baseProcessor";
-import { Literal } from "./types/Literal";
 import * as unknowParser from "./unknowParser";
-import * as WK from "./worker";
-import { TPromiseFromBrowserToWorker } from "./worker";
+import { jcemWorkerCreator } from "../@types/worker.js";
 
-
-export type createNewWorker = (
-  callers: { [key: string]: ({ ...srgs }: any) => Promise<any> },
-  starter: (getFromBrowser: TPromiseFromBrowserToWorker) => Promise<any>
-) => void;
+type externWorkerCreator = jcemWorkerCreator.ICreateWorker;
 
 /**
  * https://ericsmekens.github.io/unknowParser/
@@ -76,51 +70,80 @@ export class jexpeval extends baseProcessor {
   public static runAsWorker(
     str: string,
     printable: boolean = false,
-    parser: D.TExpParser,
-    caller: D.TGetCaller = baseProcessor.genericCallerSolver,
-    values: D.TGetValue = baseProcessor.genericValuesSolver,
+    _parser: D.TExpParser,
+    _workerCreator: null | externWorkerCreator = null,
+    _caller: D.TGetCaller = baseProcessor.genericCallerSolver,
+    _values: D.TGetValue = baseProcessor.genericValuesSolver,
   ): Promise<D.TEvalResult> {
-    // @ts-expect-error
-    if (!createWorkerNovo || typeof createWorkerNovo !== "function") {
-      throw `[runAsWorker] createWorkerNovo is not a function.`
+    if (!window) {
+      throw "[jexpeval] worker only avaliable on browser: window dont exists.";
     }
 
-    // @ts-expect-error
-    return (<createNewWorker>createWorkerNovo)(
+    if (!Worker) {
+      throw "[jexpeval] worker only avaliable on browser: Worker dont exists.";
+    }
+
+    _workerCreator =
+      typeof _workerCreator !== null
+        ? <externWorkerCreator>_workerCreator
+        : // @ts-expect-error
+        window.jcemWorkerCreator &&
+          // @ts-expect-error
+          typeof window.jcemWorkerCreator === "function"
+        ? // @ts-expect-error
+          <externWorkerCreator>window.jcemWorkerCreator
+        : null;
+
+    if (_workerCreator === null) {
+      throw "[runAsWorker] creator dont exists.";
+    }
+
+    return _workerCreator(
+      /**
+       * this run in window sede
+       */
       {
-        parser: function (input: string): Promise<Promise<unknowParser.Expression>> {
-          return new Promise<Promise<unknowParser.Expression>>((R0, R_1) => {
-            R0(1);
+        parser: (args: D.TObjectOf<any>): Promise<any> => {
+          return new Promise<any>((R0, R_1) => {
+            R0({ return: 1, id: "" });
           });
         },
-        caller: function ({ name: string, ...args: any }): Promise<D.TEvalResult> {
-          return new Promise<any>((R0, R_1) => {
-            R0(1);
-          });
+        caller: (args: D.TObjectOf<any>): Promise<any> => {
+          return <Promise<any>>_caller(args.name, args.args);
         },
-        values: function (name: string): Promise<D.TEvalResult> {
-          return new Promise<any>((R0, R_1) => {
-            R0(1);
-          });
+        values: (args: D.TObjectOf<any>): Promise<any> => {
+          return <Promise<any>>_values(args.name);
         },
       },
-      (getFromBrowser: TPromiseFromBrowserToWorker) => {
+      /**
+       * this script run in worker side (converted to string)
+       *
+       * @param inWorkerGetFromWindowSide
+       */
+      (
+        inWorkerGetFromWindowSide: jcemWorkerCreator.TPromiseFromBrowserToWorker,
+      ) => {
         new jexpeval(
           function (input: string): Promise<unknowParser.Expression> {
             return <Promise<unknowParser.Expression>>(
-              getFromBrowser("parser", [])
+              inWorkerGetFromWindowSide("parser", [])
             );
           },
           function (name: string, args: any[]): Promise<D.TEvalResult> {
-            return <Promise<D.TEvalResult>>getFromBrowser("caller", [name, [args]);
+            return <Promise<D.TEvalResult>>inWorkerGetFromWindowSide("caller", {
+              name: name,
+              args: args,
+            });
           },
           function (name: string): Promise<D.TEvalResult> {
-            return <Promise<D.TEvalResult>>getFromBrowser("values", [name]);
+            return <Promise<D.TEvalResult>>(
+              inWorkerGetFromWindowSide("values", { name: name })
+            );
           },
         )
           .eval(str, printable)
-          .catch((e) => { })
-          .then((r) => { });
+          .catch((e) => {})
+          .then((r) => {});
       },
     );
   }

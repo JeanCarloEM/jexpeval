@@ -1,5 +1,8 @@
 import * as unknowParser from "./unknowParser.js";
 export type TPrimitivePrintableTypes = string | number | bigint;
+export type TObjectOf<T> = {
+    [key: string]: T;
+};
 export type TPrimitiveTypes = TPrimitivePrintableTypes | boolean | symbol | null | object | undefined;
 export type TEvalResult = TPrimitiveTypes;
 export type TPrintableEvalResult = TPrimitivePrintableTypes;

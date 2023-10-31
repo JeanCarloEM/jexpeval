@@ -1,26 +1,28 @@
 import { testSolver, } from "./models/tester.js";
-export function createTest(tests, onStatusChange, delayBetween) {
+export function createTest(tests, onStatusChange, delayBetween, inWebwork) {
     if (onStatusChange === void 0) { onStatusChange = []; }
     if (delayBetween === void 0) { delayBetween = 0; }
+    if (inWebwork === void 0) { inWebwork = false; }
     function evaluator(str) {
         return new Promise(function (R0) {
             R0(1);
         });
     }
-    var r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
     return new Promise(function (R0, R_0) {
-        function __whilteNoId() {
-            return r.id.trim().length === 0 ? setTimeout(__whilteNoId, 1) : R0(r);
+        var r = new testSolver(tests, evaluator, onStatusChange, delayBetween);
+        function _whileWithoutId() {
+            return r.id.trim().length === 0 ? setTimeout(_whileWithoutId, 1) : R0(r);
         }
         if (typeof r !== "object") {
             throw ["[index.ts (main)] is not object.", r];
         }
-        __whilteNoId();
+        _whileWithoutId();
     });
 }
-export function load(onStatusChange, delayBetween) {
+export function load(onStatusChange, delayBetween, inWebwork) {
     if (onStatusChange === void 0) { onStatusChange = []; }
     if (delayBetween === void 0) { delayBetween = 0; }
+    if (inWebwork === void 0) { inWebwork = false; }
     return new Promise(function (R0, R_0) {
         console.log("Loading tests.");
         window
@@ -38,7 +40,9 @@ export function load(onStatusChange, delayBetween) {
                 R1(r);
             });
         })
-            .then(function (r1) { return createTest(r1, onStatusChange, delayBetween); })
+            .then(function (r1) {
+            return createTest(r1, onStatusChange, delayBetween, inWebwork);
+        })
             .catch(function (r) {
             throw "Fail to create test from json.";
         })

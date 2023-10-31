@@ -13,16 +13,19 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { jexpeval } from "../jexpeval.js";
-var Literal = (function (_super) {
-    __extends(Literal, _super);
-    function Literal() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Literal.prototype.eval = function (input) {
-        return new Promise(function (R0, R_0) { });
-    };
-    return Literal;
-}(jexpeval));
-export { Literal };
+import { baseProcessor } from "../baseProcessor.js";
+var jexpeval;
+(function (jexpeval) {
+    var Literal = (function (_super) {
+        __extends(Literal, _super);
+        function Literal() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        Literal.prototype.eval = function (input) {
+            return new Promise(function (R0, R_0) { });
+        };
+        return Literal;
+    }(baseProcessor));
+    jexpeval.Literal = Literal;
+})(jexpeval || (jexpeval = {}));
 //# sourceMappingURL=Literal.js.map

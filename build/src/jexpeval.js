@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import { baseProcessor } from "./baseProcessor.js";
-import * as WK from "./worker.js";
 var jexpeval = (function (_super) {
     __extends(jexpeval, _super);
     function jexpeval() {
@@ -48,21 +47,51 @@ var jexpeval = (function (_super) {
         if (values === void 0) { values = baseProcessor.genericValuesSolver; }
         return new jexpeval(parser, caller, values).eval(str, printable);
     };
-    jexpeval.runAsWorker = function (str, printable, parser, caller, values) {
+    jexpeval.runAsWorker = function (str, printable, _parser, _workerCreator, _caller, _values) {
         if (printable === void 0) { printable = false; }
-        if (caller === void 0) { caller = baseProcessor.genericCallerSolver; }
-        if (values === void 0) { values = baseProcessor.genericValuesSolver; }
-        return WK.createWorker({
-            parser: function () { },
-            caller: function () { },
-            values: function () { },
-        }, function (getFromBrowser) {
+        if (_workerCreator === void 0) { _workerCreator = null; }
+        if (_caller === void 0) { _caller = baseProcessor.genericCallerSolver; }
+        if (_values === void 0) { _values = baseProcessor.genericValuesSolver; }
+        if (!window) {
+            throw "[jexpeval] worker only avaliable on browser: window dont exists.";
+        }
+        if (!Worker) {
+            throw "[jexpeval] worker only avaliable on browser: Worker dont exists.";
+        }
+        _workerCreator =
+            typeof _workerCreator !== null
+                ? _workerCreator
+                :
+                    window.jcemWorkerCreator &&
+                        typeof window.jcemWorkerCreator === "function"
+                        ?
+                            window.jcemWorkerCreator
+                        : null;
+        if (_workerCreator === null) {
+            throw "[runAsWorker] creator dont exists.";
+        }
+        return _workerCreator({
+            parser: function (args) {
+                return new Promise(function (R0, R_1) {
+                    R0({ return: 1, id: "" });
+                });
+            },
+            caller: function (args) {
+                return _caller(args.name, args.args);
+            },
+            values: function (args) {
+                return _values(args.name);
+            },
+        }, function (inWorkerGetFromWindowSide) {
             new jexpeval(function (input) {
-                return (getFromBrowser("parser", []));
+                return (inWorkerGetFromWindowSide("parser", []));
             }, function (name, args) {
-                return getFromBrowser("caller", []);
+                return inWorkerGetFromWindowSide("caller", {
+                    name: name,
+                    args: args,
+                });
             }, function (name) {
-                return getFromBrowser("values", []);
+                return (inWorkerGetFromWindowSide("values", { name: name }));
             })
                 .eval(str, printable)
                 .catch(function (e) { })
